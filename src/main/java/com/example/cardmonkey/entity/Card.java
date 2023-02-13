@@ -17,7 +17,8 @@ public class Card {
 
     private String name;
     private String company;
-    private String description;
+    private String imageURL;
+    private String applyURL;
     private int lastMonthPaid;
     private int annualFee;
 
@@ -26,7 +27,4 @@ public class Card {
 
     @Embedded
     private Benefit benefit;
-
-    private String imageURL;
-    private String applyURL;
 }

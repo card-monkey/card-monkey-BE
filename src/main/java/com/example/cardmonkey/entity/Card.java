@@ -17,14 +17,19 @@ public class Card {
     @Column(name = "card_id")
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String company;
+
     private String imageURL;
     private String applyURL;
-    private int lastMonthPaid;
-    private int annualFee;
+    private Integer lastMonthPaid;
+    private Integer annualFee;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CardType cardType;
 
     @Embedded

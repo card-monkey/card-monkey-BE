@@ -20,4 +20,6 @@ public class Benefit {
     private String phone;
     private String gas;
     private String simplePayment;
+    private String tax;
+    private String shopping;
 }

@@ -17,10 +17,15 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String userId;
 
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
     private String password;
+
     private String role;
 
     @Embedded

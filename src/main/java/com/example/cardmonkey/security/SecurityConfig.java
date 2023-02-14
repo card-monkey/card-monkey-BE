@@ -18,7 +18,7 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private static final String[] PUBLIC_URLS = { //이 URL은 권한 검사안함
-            "/sign-up", "/sign-in" , "/index", "/js/**", "/logout"
+            "/signup", "/login"
     };
 
     @Bean
@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .and()
                 .csrf().disable() // rest api이므로 csrf 보안이 필요없으므로 disable처리
                 .httpBasic().disable() // 기본설정 사용안함. 기본설정은 비인증시 로그인폼 화면으로 리다이렉트 된다.
-                .formLogin().loginPage("/index").permitAll()//로그인 기본 url 설정
+                .formLogin().loginPage("/login").permitAll()//로그인 기본 url 설정
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token으로 인증할것이므로 세션필요없으므로 생성안함.
                 .and()
@@ -47,6 +47,4 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() { //시큐리티 filter 제외, 그러나 OncePerRequestFilter는 시큐리티 필터가 아니라서 로직실행
         return (web) -> web.ignoring().mvcMatchers(PUBLIC_URLS);
     }
-
-
 }

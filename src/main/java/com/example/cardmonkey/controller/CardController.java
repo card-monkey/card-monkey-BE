@@ -56,23 +56,23 @@ public class CardController {
         return null;
     }
 
-    /**
-     * 카드명 검색
-     */
-    @GetMapping("/searchCard")
-    @ApiOperation(value = "카드명 검색", notes = "카드명으로 검색합니다.")
-    public String searchCardByName(@RequestParam String name) {
-        return null;
-    }
-
-    /**
-     * 카드 혜택 검색
-     */
-    @GetMapping("/searchCard")
-    @ApiOperation(value = "카드 혜택 검색", notes = "카드 혜택으로 검색합니다.")
-    public String searchCardByBenefit(@RequestParam String benefit) {
-        return null;
-    }
+//    /**
+//     * 카드명 검색
+//     */
+//    @GetMapping("/searchCard")
+//    @ApiOperation(value = "카드명 검색", notes = "카드명으로 검색합니다.")
+//    public String searchCardByName(@RequestParam String name) {
+//        return null;
+//    }
+//
+//    /**
+//     * 카드 혜택 검색
+//     */
+//    @GetMapping("/searchCard")
+//    @ApiOperation(value = "카드 혜택 검색", notes = "카드 혜택으로 검색합니다.")
+//    public String searchCardByBenefit(@RequestParam String benefit) {
+//        return null;
+//    }
 
     /**
      * 전체 카드 조회

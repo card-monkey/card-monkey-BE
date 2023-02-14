@@ -81,7 +81,7 @@ public class AuthController {
      */
     @PostMapping("/changePassword/{id}")
     @ApiOperation(value = "비밀번호 변경", notes = "비밀번호를 확인 후 변경합니다.")
-    public String changePassword(@PathVariable("id") String id, @RequestBody PasswordDTO dto) {
+    public String changePassword(@PathVariable("id") Long id, @RequestBody PasswordDTO dto) {
         if (dto.getCurrentPassword() == null) {
             return "현재 비밀번호를 입력해주세요";}
         if (dto.getNewPassword() == null) {
@@ -100,7 +100,7 @@ public class AuthController {
      */
     @DeleteMapping("/deleteAccount/{id}")
     @ApiOperation(value = "회원 탈퇴", notes = "회원을 탈퇴합니다.")
-    public String deleteAccount(@PathVariable String id) {
+    public String deleteAccount(@PathVariable Long id) {
         try {
             memberService.deleteAccount(id);
             return "회원탈퇴 완료";

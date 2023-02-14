@@ -36,4 +36,8 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<Paid> paids = new ArrayList<>();
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

@@ -1,45 +1,91 @@
 package com.example.cardmonkey.jwt;
 
+import com.example.cardmonkey.dto.LoginRequest;
 import com.example.cardmonkey.entity.Member;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.Date;
 
+@RequiredArgsConstructor
 @Component
 public class JwtProvider {
-    //토큰을 발급하거나, 토큰을 유저 객체로 바꾸는 클래스
 
-    public String token(Member member){
-        Date date=new Date();
+    private final JwtProperties jwtProperties;
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    /**
+     * 토큰 생성
+     */
+    public String makeToken(Member member) {
+        Date now = new Date();
+//        Date expiration = new Date(now.getTime() + Duration.ofDays(1).toMillis());
 
         return Jwts.builder()
-                .setHeaderParam("typ","JWT")
-                .setIssuer("james")
-                .setIssuedAt(date)
-                .setExpiration(new Date(date.getTime()+3600000))
-                .claim("userId",member.getUserId())
-                .signWith(SignatureAlgorithm.HS256,"12345")
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setIssuer(jwtProperties.getIssuer())
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + Duration.ofMinutes(30).toMillis())) // 만료기일 1일
+                .claim("userId", member.getUserId())
+                .claim("name", member.getName())
+                .claim("role", member.getRole())
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
-
     }
 
-    public Claims tokenToUser(String token){ // "Bearer sdmleeweawlek.ekwekwekewrkj.enwerkjwerknrwekn"
-
-        if(token!=null) {
+    /**
+     * Token 값을 Claims로 바꿔주는 메서드
+     */
+//    public Claims parsingToken(String token) {
+//        return Jwts.parser()
+//                .setSigningKey(jwtProperties.getSecretKey())
+//                .parseClaimsJws(token)
+//                .getBody();
+//    }
+    public Claims parsingToken(String token) {
+        if (token != null) {
             token = token.substring("Bearer".length());
-
             return Jwts.parser()
-                    .setSigningKey("12345")
+                    .setSigningKey(jwtProperties.getSecretKey())
                     .parseClaimsJws(token)
                     .getBody();
-
-        }else{
+        } else {
             return null;
         }
-
     }
 
+    public LoginRequest getMemberDtoOf(String authorizationHeader) {
+        validationAuthorizationHeader(authorizationHeader); //토큰이 Bearer로 시작하는지 형식이 맞는지 확인
+        String token = "";
+        Claims claims = null;
+
+        try {
+            token = extractToken(authorizationHeader); // header에서 토큰 추출 (Bearer 제거)
+            claims = parsingToken(token);
+            return new LoginRequest(claims);
+        } catch (Exception e) {
+            logger.error("토큰이 없습니다.(2)");
+        }
+        return null;
+    }
+
+    /**
+     * 헤더값이 유효한지 검증하는 메서드
+     */
+    private void validationAuthorizationHeader(String header) {
+        if (header == null || !header.startsWith(jwtProperties.getTokenPrefix())) {
+            logger.error("토큰이 없습니다.(1)");
+        }
+    }
+
+    /**
+     * 토큰 (Bearer) 떼고 토큰값만 가져오는 메서드
+     */
+    public String extractToken(String authorizationHeader) {
+        return authorizationHeader.substring(jwtProperties.getTokenPrefix().length());
+    }
 }

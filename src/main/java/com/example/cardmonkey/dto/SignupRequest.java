@@ -17,13 +17,6 @@ public class SignupRequest {
     private String name;
     private String role;
 
-    public SignupRequest(Member member) {
-        this.userId = member.getUserId();
-        this.password = member.getPassword();
-        this.name = member.getName();
-        this.role = member.getRole();
-    }
-
     public Member toEntity() {
         return Member.builder()
                 .userId(userId)

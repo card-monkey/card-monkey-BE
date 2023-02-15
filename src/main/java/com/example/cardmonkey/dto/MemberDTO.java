@@ -1,6 +1,7 @@
 package com.example.cardmonkey.dto;
 
 import com.example.cardmonkey.entity.Member;
+import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,8 @@ public class MemberDTO {
 
     private String userId;
     private String password;
+    private String name;
+    private String role;
 
     public Member toEntity(){
         return null;
@@ -31,11 +34,11 @@ public class MemberDTO {
          ===================== */
     }
 
-    /* 예시코드  =====================
-    public UserDTO(Claims claims){
-        this.email=claims.get("email",String.class);
+    public MemberDTO(Claims claims) {
+        this.userId = claims.get("userId",String.class);
+        this.name = claims.get("name",String.class);
+        this.role = claims.get("role",String.class);
     }
-    ===================== */
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // ROLE_USER, ROLE_ADMIN 은 정해저 있는 네이밍임, getAuthorities() 이름도 같아야함

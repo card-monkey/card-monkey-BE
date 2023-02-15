@@ -1,16 +1,15 @@
 package com.example.cardmonkey.controller;
 
+import com.example.cardmonkey.dto.LoginRequest;
+import com.example.cardmonkey.dto.LoginResponse;
 import com.example.cardmonkey.dto.PasswordDTO;
 import com.example.cardmonkey.dto.SignupRequest;
 import com.example.cardmonkey.service.MemberService;
 import com.example.cardmonkey.entity.Token;
 import com.example.cardmonkey.repository.TokenRepository;
-import com.example.cardmonkey.service.MemberService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,25 +27,18 @@ public class AuthController {
     @ApiOperation(value = "회원가입", notes = "회원가입을 수행합니다.")
     public String signUp(@RequestBody SignupRequest req) {
         if (req.getUserId() == null || req.getPassword() == null || req.getName() == null) {
-            return "모든 값을 입력해주세요";}
+            return "모든 값을 입력해주세요";
+        }
         return memberService.signup(req);
     }
-
-    /* 회원가입 예시코드 =======================
-    @PostMapping("/sign-up")
-    public String signUp(UserDTO addUserDto) {
-        userService.signup(addUserDto);
-        return "success";
-    }
-    ==================================== */
 
     /**
      * 로그인
      */
-    @PostMapping("login")
+    @PostMapping("/login")
     @ApiOperation(value = "로그인", notes = "로그인을 수행합니다.")
-    public String login(){
-        return null;
+    public LoginResponse signIn(@RequestBody LoginRequest req) {
+        return memberService.login(req);
     }
 
     /* 로그인 예시코드 =========================
@@ -81,7 +73,7 @@ public class AuthController {
      */
     @PostMapping("/changePassword/{id}")
     @ApiOperation(value = "비밀번호 변경", notes = "비밀번호를 확인 후 변경합니다.")
-    public String changePassword(@PathVariable("id") Long id, @RequestBody PasswordDTO dto) {
+    public String changePassword(@PathVariable("id") String id, @RequestBody PasswordDTO dto) {
         if (dto.getCurrentPassword() == null) {
             return "현재 비밀번호를 입력해주세요";}
         if (dto.getNewPassword() == null) {
@@ -100,7 +92,7 @@ public class AuthController {
      */
     @DeleteMapping("/deleteAccount/{id}")
     @ApiOperation(value = "회원 탈퇴", notes = "회원을 탈퇴합니다.")
-    public String deleteAccount(@PathVariable Long id) {
+    public String deleteAccount(@PathVariable String id) {
         try {
             memberService.deleteAccount(id);
             return "회원탈퇴 완료";

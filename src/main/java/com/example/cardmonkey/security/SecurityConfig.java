@@ -1,6 +1,7 @@
 package com.example.cardmonkey.security;
 
 import com.example.cardmonkey.jwt.JwtFilter;
+import com.example.cardmonkey.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -18,10 +19,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
-    private static final String[] PUBLIC_URLS = { //이 URL은 권한 검사안함
-            "/signup", "/login"
+    private static final String[] PUBLIC_URLS = { //이 URL은 권한 검사 안 함
+            "/signup", "/login", "/logout"
     };
+
+    private final JwtProvider jwtProvider;
 
     @Bean //회원 insert 서비스에서 비밀번호 암호화/복호화에 사용됨
     public PasswordEncoder passwordEncoderParser() {
@@ -29,7 +31,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http)throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http)throws Exception {
 
         return http
                 .authorizeRequests()// 다음 리퀘스트에 대한 사용권한 체크
@@ -45,7 +47,8 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token으로 인증할것이므로 세션필요없으므로 생성안함.
                 .and()
                 .addFilterBefore(
-                        jwtFilter,
+//                        jwtFilter,
+                        JwtFilter.of(jwtProvider),
                         UsernamePasswordAuthenticationFilter.class).build();
         //인증을 처리하는 기본필터 UsernamePasswordAuthenticationFilter 대신 별도의 인증 로직을 가진 필터를 생성하고 사용하고 싶을 때 아래와 같이 필터를 등록하고 사용
     }

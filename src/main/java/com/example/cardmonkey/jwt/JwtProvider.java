@@ -29,7 +29,7 @@ public class JwtProvider {
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + Duration.ofMinutes(30).toMillis())) // 만료기일 1일
+                .setExpiration(new Date(now.getTime() + Duration.ofMinutes(30).toMillis())) // 만료기일
                 .claim("userId", member.getUserId())
                 .claim("name", member.getName())
                 .claim("role", member.getRole())
@@ -40,22 +40,11 @@ public class JwtProvider {
     /**
      * Token 값을 Claims로 바꿔주는 메서드
      */
-//    public Claims parsingToken(String token) {
-//        return Jwts.parser()
-//                .setSigningKey(jwtProperties.getSecretKey())
-//                .parseClaimsJws(token)
-//                .getBody();
-//    }
     public Claims parsingToken(String token) {
-        if (token != null) {
-            token = token.substring("Bearer".length());
-            return Jwts.parser()
-                    .setSigningKey(jwtProperties.getSecretKey())
-                    .parseClaimsJws(token)
-                    .getBody();
-        } else {
-            return null;
-        }
+        return Jwts.parser()
+                .setSigningKey(jwtProperties.getSecretKey())
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public LoginRequest getMemberDtoOf(String authorizationHeader) {

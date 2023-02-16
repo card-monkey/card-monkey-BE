@@ -36,8 +36,18 @@ public class CardService {
      */
 
     /**
-     * 카드사 검색
+     * 카드사 검색(우석)
      */
+    public List<CardDTO> searchCardByCompany(String cardCompany){
+
+        List<CardDTO> cards = cardRepository.findAllByCompanyContains(cardCompany)
+                .stream()
+                .map(card -> new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()))
+                .collect(Collectors.toList());
+
+        return cards;
+    }
+
 
     /**
      * 카드명 검색(우석)

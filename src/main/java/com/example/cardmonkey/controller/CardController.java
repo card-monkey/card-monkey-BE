@@ -60,8 +60,9 @@ public class CardController {
      */
     @GetMapping("/card/company")
     @ApiOperation(value = "카드사 검색", notes = "카드사로 검색합니다.")
-    public String searchCardByCompany(@RequestParam String company) {
-        return null;
+    public List<CardDTO> searchCardByCompany(@RequestParam(name = "company") String cardCompany) {
+
+        return cardService.searchCardByCompany(cardCompany);
     }
 
     /**
@@ -70,7 +71,6 @@ public class CardController {
     @GetMapping("/card/name")
     @ApiOperation(value = "카드명 검색", notes = "카드명으로 검색합니다.")
     public List<CardDTO> searchCardByName(@RequestParam(name = "name") String cardName) {
-        System.out.println(cardName);
         return cardService.searchCardByName(cardName);
     }
 

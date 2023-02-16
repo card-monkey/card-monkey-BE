@@ -1,8 +1,10 @@
 package com.example.cardmonkey.service;
 
+import com.example.cardmonkey.dto.ChangeBenefitReqDTO;
 import com.example.cardmonkey.dto.LoginRequest;
 import com.example.cardmonkey.dto.LoginResponse;
 import com.example.cardmonkey.dto.SignupRequest;
+import com.example.cardmonkey.entity.Benefit;
 import com.example.cardmonkey.entity.Member;
 import com.example.cardmonkey.jwt.JwtProvider;
 import com.example.cardmonkey.repository.MemberRepository;
@@ -100,5 +102,12 @@ public class MemberService {
     @Transactional
     public void deleteAccount(String id) {
         memberRepository.deleteByUserId(id);
+    }
+
+    @Transactional
+    public void changeBenefit(String userId, ChangeBenefitReqDTO req) {
+        Member findMember = memberRepository.findByUserId(userId);
+
+        findMember.updateBenefit(new Benefit(req.getBenefit()));
     }
 }

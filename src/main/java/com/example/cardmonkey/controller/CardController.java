@@ -1,14 +1,22 @@
 package com.example.cardmonkey.controller;
 
+import com.example.cardmonkey.dto.CardDTO;
+import com.example.cardmonkey.entity.Card;
+import com.example.cardmonkey.service.CardService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Api(tags = {"카드 서비스"}, description = "카드 서비스를 담당합니다.")
 public class CardController {
+
+    private final CardService cardService;
 
     /**
      * 신청한 카드 내역
@@ -79,8 +87,9 @@ public class CardController {
      */
     @GetMapping("/card")
     @ApiOperation(value = "전체 카드 조회", notes = "전체 카드를 조회합니다.")
-    public String selectAllCard() {
-        return null;
+    public List<CardDTO> selectAllCard() {
+        System.out.println(cardService.selectAllCard());
+        return cardService.selectAllCard();
     }
 
     /**

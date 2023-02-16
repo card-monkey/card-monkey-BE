@@ -1,14 +1,17 @@
 package com.example.cardmonkey.service;
 
+import com.example.cardmonkey.dto.CardDTO;
 import com.example.cardmonkey.entity.Card;
 import com.example.cardmonkey.entity.Favor;
 import com.example.cardmonkey.entity.Member;
 import com.example.cardmonkey.repository.CardRepository;
-import com.example.cardmonkey.repository.FavorRepository;
 import com.example.cardmonkey.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +20,7 @@ public class CardService {
 
     private final CardRepository cardRepository;
     private final MemberRepository memberRepository;
-    private final FavorRepository favorRepository;
+    //private final FavorRepository favorRepository;
 
     /**
      * 신청한 카드 내역
@@ -48,8 +51,18 @@ public class CardService {
      */
 
     /**
-     * 전체 카드 조회
+     * 전체 카드 조회(우석)
      */
+    public List<CardDTO> selectAllCard(){
+
+        List<CardDTO> cards = cardRepository.findAll()
+                                            .stream()
+                                            .map(card -> new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()))
+                                            .collect(Collectors.toList());
+
+        return cards;
+    }
+
 
     /**
      * 카드 상세정보 조회

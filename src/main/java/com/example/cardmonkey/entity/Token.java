@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="jwt_logout")
+@Table(name="token_blacklist")
 @Getter
 @Setter
 @Builder
@@ -17,6 +17,6 @@ import javax.persistence.Table;
 public class Token {
 
     @Id
-    @Column(name="token")
+    @Column(name="bolocked_token")
     private String token;
 }

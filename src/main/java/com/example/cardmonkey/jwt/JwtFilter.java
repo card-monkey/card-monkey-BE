@@ -39,20 +39,48 @@ public class JwtFilter extends OncePerRequestFilter {
                 .build();
     }
 
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain) throws IOException, ServletException {
+
+        //filter에서 header를 가져옴
+        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        try {
+            //token 값에서 유효값 (id, role)을 추출하여 userDTO를 만듦
+            LoginRequest user = jwtProvider.getMemberDtoOf(authorizationHeader);
+            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
+                    user,
+                    "",
+                    user.getAuthorities()));
+            filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException exception) {
+            logger.error("ExpiredJwtException : expired token");
+        } catch (Exception exception) {
+            logger.error("Exception : no token");
+            return ;
+        }
+    }
+
 //    @Override
 //    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 //                                    FilterChain filterChain) throws IOException, ServletException {
 //
 //        // filter에서 header를 가져옴
-//        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+//        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 //
 //        try {
+//            if (!tokenRepository.existsByToken(token)) {
+//                Claims claims = jwtProvider.parsingToken(token);
+//                if (claims != null) {
+//                    MemberDTO dto = new MemberDTO(claims);
+//                    SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(dto, null, dto.getAuthorities()));
+//                }
+//            }
+//
 //            //token 값에서 유효값 (id, role)을 추출하여 userDTO를 만듦
-//            LoginRequest user = jwtProvider.getMemberDtoOf(authorizationHeader);
-//            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
-//                    user,
-//                    "",
-//                    user.getAuthorities()));
+//            LoginRequest user = jwtProvider.getMemberDtoOf(token);
+//            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities()));
 //
 //            filterChain.doFilter(request, response);
 //        } catch (ExpiredJwtException exception) {
@@ -62,32 +90,4 @@ public class JwtFilter extends OncePerRequestFilter {
 //            return ;
 //        }
 //    }
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws IOException, ServletException {
-
-        // filter에서 header를 가져옴
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-        try {
-            if (!tokenRepository.existsByToken(token)) {
-                Claims claims = jwtProvider.parsingToken(token);
-                if (claims != null) {
-                    MemberDTO dto = new MemberDTO(claims);
-                    SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(dto, null, dto.getAuthorities()));
-                }
-            }
-
-            //token 값에서 유효값 (id, role)을 추출하여 userDTO를 만듦
-            LoginRequest user = jwtProvider.getMemberDtoOf(token);
-            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities()));
-
-            filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException exception) {
-            logger.error("ExpiredJwtException : expired token");
-        } catch (Exception exception) {
-            logger.error("Exception : no token");
-            return ;
-        }
-    }
 }

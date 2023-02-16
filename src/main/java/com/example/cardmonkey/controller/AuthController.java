@@ -41,23 +41,6 @@ public class AuthController {
         return memberService.login(req);
     }
 
-    /* 로그인 예시코드 =========================
-    @PostMapping("/sign-in")
-    public String signIn(UserDTO loginUserDto) {
-        String loginUserResponse = userService.signin(loginUserDto);
-        return loginUserResponse;
-    }
-    ==================================== */
-
-
-    /* 권한확인 예시코드 ==========================
-    @GetMapping("/hello")
-    @PreAuthorize("hasAnyRole('USER')") // USER 권한만 호출 가능
-    public String hello(@AuthenticationPrincipal UserDTO user) {
-        return user.getEmail() + ", 안녕하세요!";
-    }
-    ==================================== */
-
     /**
      * 로그아웃
      */

@@ -47,8 +47,8 @@ public class MemberService {
             return new LoginResponse("아이디와 비밀번호를 입력하세요.");
         }
         Member member = req.toEntity();
-//        Member result = memberRepository.findById(member.getId()).orElseThrow(IllegalArgumentException::new);
-        Member result = memberRepository.findByUserId(member.getUserId()).orElseThrow(IllegalArgumentException::new);
+//        Member result = memberRepository.findByUserId(member.getUserId()).orElseThrow(IllegalArgumentException::new);
+        Member result = memberRepository.findByUserId(member.getUserId());
         try {
             if (result == null || !passwordMustBeSame(req.getPassword(), result.getPassword())) {
                 throw new IllegalArgumentException();
@@ -77,7 +77,8 @@ public class MemberService {
      */
     @Transactional
     public Member updatePassword(String memberId, String currentPassword, String newPassword) {
-        Member member = memberRepository.findByUserId(memberId).orElseThrow(IllegalArgumentException::new);
+//        Member member = memberRepository.findByUserId(memberId).orElseThrow(IllegalArgumentException::new);
+        Member member = memberRepository.findByUserId(memberId);
         boolean isSuccess = passwordEncoder.matches(currentPassword, member.getPassword());
         if (isSuccess) {
             member.updatePassword(encodingPassword(newPassword));

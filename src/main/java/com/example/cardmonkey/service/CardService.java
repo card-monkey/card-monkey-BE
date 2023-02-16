@@ -1,9 +1,6 @@
 package com.example.cardmonkey.service;
 
 import com.example.cardmonkey.dto.CardDTO;
-import com.example.cardmonkey.entity.Card;
-import com.example.cardmonkey.entity.Favor;
-import com.example.cardmonkey.entity.Member;
 import com.example.cardmonkey.repository.CardRepository;
 import com.example.cardmonkey.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +40,17 @@ public class CardService {
      */
 
     /**
-     * 카드명 검색
+     * 카드명 검색(우석)
      */
+    public List<CardDTO> searchCardByName(String cardName){
+
+        List<CardDTO> cards = cardRepository.findAllByNameContains(cardName)
+                                            .stream()
+                                            .map(card -> new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()))
+                                            .collect(Collectors.toList());
+
+        return cards;
+    }
 
     /**
      * 카드 혜택 검색

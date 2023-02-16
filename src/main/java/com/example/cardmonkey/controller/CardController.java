@@ -60,7 +60,7 @@ public class CardController {
      */
     @GetMapping("/card/company")
     @ApiOperation(value = "카드사 검색", notes = "카드사로 검색합니다.")
-    public String searchCardByCompany(@RequestParam String search) {
+    public String searchCardByCompany(@RequestParam String company) {
         return null;
     }
 
@@ -69,8 +69,9 @@ public class CardController {
      */
     @GetMapping("/card/name")
     @ApiOperation(value = "카드명 검색", notes = "카드명으로 검색합니다.")
-    public String searchCardByName(@RequestParam String search) {
-        return null;
+    public List<CardDTO> searchCardByName(@RequestParam(name = "name") String cardName) {
+        System.out.println(cardName);
+        return cardService.searchCardByName(cardName);
     }
 
     /**
@@ -78,7 +79,7 @@ public class CardController {
      */
     @GetMapping("/card/benefit")
     @ApiOperation(value = "카드 혜택 검색", notes = "카드 혜택으로 검색합니다.")
-    public String searchCardByBenefit(@RequestParam String search) {
+    public String searchCardByBenefit(@RequestParam String benefit) {
         return null;
     }
 
@@ -88,7 +89,6 @@ public class CardController {
     @GetMapping("/card")
     @ApiOperation(value = "전체 카드 조회", notes = "전체 카드를 조회합니다.")
     public List<CardDTO> selectAllCard() {
-        System.out.println(cardService.selectAllCard());
         return cardService.selectAllCard();
     }
 

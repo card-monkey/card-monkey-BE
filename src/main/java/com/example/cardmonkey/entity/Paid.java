@@ -21,6 +21,10 @@ public class Paid {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "paid")
-    private List<PaidCard> paidCards = new ArrayList<>();
+    // @OneToMany(mappedBy = "paid")
+    // private List<PaidCard> paidCards = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "card_id")
+    private Card card;
 }

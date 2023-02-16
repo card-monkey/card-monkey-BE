@@ -21,6 +21,10 @@ public class Favor {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "favor")
-    private List<FavorCard> favorCards = new ArrayList<>();
+    // @OneToMany(mappedBy = "favor")
+    // private List<FavorCard> favorCards = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "card_id")
+    private Card card;
 }

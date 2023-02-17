@@ -1,6 +1,8 @@
 package com.example.cardmonkey.entity;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,13 +20,14 @@ public class Favor {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "member_id")
     private Member member;
-
-    // @OneToMany(mappedBy = "favor")
-    // private List<FavorCard> favorCards = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_id")
     private Card card;
+
+    @Column(nullable = false)
+    private int status; // 1 = 찜하기, 0 = 찜하기 취소
 }

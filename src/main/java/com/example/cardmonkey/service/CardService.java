@@ -2,12 +2,15 @@ package com.example.cardmonkey.service;
 
 import com.example.cardmonkey.dto.FavorResponseDTO;
 import com.example.cardmonkey.dto.CardByBenefitResDTO;
+import com.example.cardmonkey.dto.PaidReqDTO;
+import com.example.cardmonkey.dto.PaidResDTO;
 import com.example.cardmonkey.entity.Card;
 import com.example.cardmonkey.entity.Favor;
 import com.example.cardmonkey.entity.Member;
 import com.example.cardmonkey.repository.CardRepository;
 import com.example.cardmonkey.repository.FavorRepository;
 import com.example.cardmonkey.repository.MemberRepository;
+import com.example.cardmonkey.repository.PaidRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,10 +29,17 @@ public class CardService {
     private final CardRepository cardRepository;
     private final MemberRepository memberRepository;
     private final FavorRepository favorRepository;
+    private final PaidRepository paidRepository;
 
-    /**
-     * 신청한 카드 내역
-     */
+    /*=============================================
+     * 카드 신청내역 조회 : code by 주찬혁(crossbell8368)
+     =============================================*/
+    // 전달받은 userId를 조회조건으로 사용
+    public List<PaidResDTO> paidList(String userId) {
+        return paidRepository.findByMember(memberRepository.findByUserId(userId)).stream()
+                .map(PaidResDTO::new)
+                .collect(Collectors.toList());
+    }
 
     /**
      * 인기 TOP 3 카드
@@ -95,9 +105,28 @@ public class CardService {
      * 카드 상세정보 조회
      */
 
-    /**
-     * 카드 신청
-     */
+    /*=============================================
+     * 카드신청 : code by 주찬혁(crossbell8368)
+     =============================================*/
+    public String paidRequest(Long id, String memberId) {
+        if (memberId != null){
+            Member member = memberRepository.findByUserId(memberId);
+            Card card = cardRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+            try { // 기존 신청내역이 있는지 확인
+                if(paidRepository.findAllByMemberAndCard(member, card) != null){
+                    return "Apply record exist";
+                }else{
+                    paidRepository.save(new PaidReqDTO(member, card).toEntity());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Apply failed";
+            }
+            return "Apply success";
+        }else{
+            return "No member Info";
+        }
+    }
 
     /**
      * 찜하기 or 찜하기 취소 (관심상품)
@@ -147,8 +176,25 @@ public class CardService {
      * 혜택 변경
      */
 
-    /**
-     * 신청한 카드 취소
-     */
+    /*=============================================
+    * 카드신청 취소 : code by 주찬혁(crossbell8368)
+    =============================================*/
+    public String paidCancel(Long id, String memberId) {
+        if (memberId != null) {
+            Member member = memberRepository.findByUserId(memberId);
+            Card card = cardRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+            try {
+                paidRepository.delete(
+                        paidRepository.findAllByMemberAndCard(member, card)
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "delete failed";
+            }
+            return "delete success";
+        }else{
+            return "No member Info";
+        }
+    }
 
 }

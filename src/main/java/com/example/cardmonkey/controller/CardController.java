@@ -2,6 +2,7 @@ package com.example.cardmonkey.controller;
 
 import com.example.cardmonkey.dto.FavorResponseDTO;
 import com.example.cardmonkey.dto.LoginRequest;
+import com.example.cardmonkey.dto.PaidResDTO;
 import com.example.cardmonkey.service.CardService;
 import com.example.cardmonkey.dto.CardByBenefitResDTO;
 import io.swagger.annotations.Api;
@@ -19,13 +20,13 @@ public class CardController {
 
     private final CardService cardService;
 
-    /**
-     * 신청한 카드 내역
-     */
+    /*=============================================
+     * 카드 신청내역 조회 : code by 주찬혁(crossbell8368)
+     =============================================*/
     @GetMapping("/paid/{id}")
     @ApiOperation(value = "신청한 카드 내역", notes = "신청한 카드 내역을 조회합니다.")
-    public String selectPaidCard(@PathVariable String id) {
-        return null;
+    public List<PaidResDTO> selectPaidCard(@PathVariable("id") String memberId) {
+        return cardService.paidList(memberId);
     }
 
     /**
@@ -100,13 +101,15 @@ public class CardController {
         return null;
     }
 
-    /**
-     * 카드 신청
-     */
+    /*=============================================
+     * 카드신청 : code by 주찬혁(crossbell8368)
+     =============================================*/
     @PostMapping("/card/{id}")
     @ApiOperation(value = "카드 신청", notes = "카드를 신청합니다.")
-    public String payCard(@PathVariable String id) {
-        return null;
+    public String payCard(@PathVariable("id") Long id, Authentication authentication) {
+        LoginRequest loginRequest = (LoginRequest) authentication.getPrincipal();
+        String memberId = loginRequest.getUserId();
+        return cardService.paidRequest(id, memberId);
     }
 
     /**
@@ -148,12 +151,14 @@ public class CardController {
         return null;
     }
 
-    /**
-     * 신청한 카드 취소
-     */
+    /*=============================================
+    * 카드신청 취소 : code by 주찬혁(crossbell8368)
+    =============================================*/
     @DeleteMapping("/paid/{id}")
     @ApiOperation(value = "신청한 카드 취소", notes = "신청한 카드를 취소합니다.")
-    public String deletePaidCard(@PathVariable String id) {
-        return null;
+    public String deletePaidCard(@PathVariable("id") Long id, Authentication authentication) {
+        LoginRequest loginRequest = (LoginRequest) authentication.getPrincipal();
+        String memberId = loginRequest.getUserId();
+        return cardService.paidCancel(id, memberId);
     }
 }

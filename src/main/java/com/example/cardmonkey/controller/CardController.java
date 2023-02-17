@@ -1,10 +1,13 @@
 package com.example.cardmonkey.controller;
 
-import com.example.cardmonkey.dto.CardByBenefitResDTO;
+import com.example.cardmonkey.dto.FavorResponseDTO;
+import com.example.cardmonkey.dto.LoginRequest;
 import com.example.cardmonkey.service.CardService;
+import com.example.cardmonkey.dto.CardByBenefitResDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,8 +51,8 @@ public class CardController {
      */
     @GetMapping("/card/favor/{id}")
     @ApiOperation(value = "찜한 카드 내역", notes = "내가 찜한 카드들의 내역을 조회합니다.")
-    public String selectCardByFavor(@PathVariable String id) {
-        return null;
+    public List<FavorResponseDTO> selectCardByFavor(@PathVariable String id) {
+        return cardService.selectCardByFavor(id);
     }
 
     /**
@@ -107,12 +110,15 @@ public class CardController {
     }
 
     /**
-     * 찜하기 (관심상품)
+     * 찜하기 or 찜하기 취소 (관심상품)
      */
     @PostMapping("/card/{id}/favor")
-    @ApiOperation(value = "카드 찜하기", notes = "관심있는 카드를 찜합니다.")
-    public String favorCard(@PathVariable String id) {
-        return null;
+    @ApiOperation(value = "찜 기능", notes = "유저가 관광지를 찜 하거나 찜 취소를 할 수 있습니다.")
+    public String favorCard(@PathVariable Long id, Authentication authentication) {
+        LoginRequest loginRequest = (LoginRequest) authentication.getPrincipal();
+        String memberId = loginRequest.getUserId();
+        System.out.println(memberId);
+        return cardService.saveFavor(id, memberId);
     }
 
     /**

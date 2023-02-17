@@ -1,17 +1,22 @@
 package com.example.cardmonkey.service;
 
+import com.example.cardmonkey.dto.FavorResponseDTO;
 import com.example.cardmonkey.dto.CardByBenefitResDTO;
 import com.example.cardmonkey.entity.Card;
+import com.example.cardmonkey.entity.Favor;
 import com.example.cardmonkey.entity.Member;
 import com.example.cardmonkey.repository.CardRepository;
-// import com.example.cardmonkey.repository.FavorRepository;
+import com.example.cardmonkey.repository.FavorRepository;
 import com.example.cardmonkey.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +25,7 @@ public class CardService {
 
     private final CardRepository cardRepository;
     private final MemberRepository memberRepository;
-    // private final FavorRepository favorRepository;
+    private final FavorRepository favorRepository;
 
     /**
      * 신청한 카드 내역
@@ -38,6 +43,12 @@ public class CardService {
     /**
      * 나의 관심 카드 (찜 내역)
      */
+    @Transactional
+    public List<FavorResponseDTO> selectCardByFavor(String userId) {
+        Member member = memberRepository.findByUserId(userId);
+        List<Favor> favors = favorRepository.findAllByMember(member);
+        return favors.stream().map(FavorResponseDTO::new).collect(Collectors.toList());
+    }
 
     /**
      * 카드사 검색
@@ -91,38 +102,38 @@ public class CardService {
     /**
      * 찜하기 or 찜하기 취소 (관심상품)
      */
-//    public String saveFavor(Long id, String memberId) {
-//        if (memberId != null) {
-//            Member member = memberRepository.findByUserId(memberId);
-//            Card card = cardRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-//            if (favorRepository.findAllByCardAndMember(card, member) == null) {
-//                updateFavorStatus("new" , null, 1, card, member);
-//                return "찜하기 완료";
-//            } else {
-//                if (favorRepository.findAllByCardAndMember(card, member).getStatus() == 1) {
-//                    updateFavorStatus(null, favorRepository.findAllByCardAndMember(card, member), 0, card, null);
-//                    return "찜하기 취소 완료";
-//                } else {
-//                    updateFavorStatus(null, favorRepository.findAllByCardAndMember(card, member), 1, card, null);
-//                    return "찜하기 완료";
-//                }
-//            }
-//        }
-//        return "회원 정보가 없습니다.";
-//    }
+    public String saveFavor(Long id, String memberId) {
+        if (memberId != null) {
+            Member member = memberRepository.findByUserId(memberId);
+            Card card = cardRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+            if (favorRepository.findAllByCardAndMember(card, member) == null) {
+                updateFavorStatus("new" , null, 1, card, member);
+                return "찜하기 완료";
+            } else {
+                if (favorRepository.findAllByCardAndMember(card, member).getStatus() == 1) {
+                    updateFavorStatus(null, favorRepository.findAllByCardAndMember(card, member), 0, card, null);
+                    return "찜하기 취소 완료";
+                } else {
+                    updateFavorStatus(null, favorRepository.findAllByCardAndMember(card, member), 1, card, null);
+                    return "찜하기 완료";
+                }
+            }
+        }
+        return "회원 정보가 없습니다.";
+    }
 
     /**
      * 찜 상태 업데이트 (관심상품)
      */
-//    public void updateFavorStatus(String check, Favor res, int status, Card card, Member member) {
-//        Favor favor;
-//        if (check == null) {
-//            favor = new Favor(res.getId(), res.getMember(), card, status);
-//        } else {
-//            favor = new Favor(null, member, card, status);
-//        }
-//        favorRepository.save(favor);
-//    }
+    public void updateFavorStatus(String check, Favor res, int status, Card card, Member member) {
+        Favor favor;
+        if (check == null) {
+            favor = new Favor(res.getId(), res.getMember(), card, status);
+        } else {
+            favor = new Favor(null, member, card, status);
+        }
+        favorRepository.save(favor);
+    }
 
     /**
      * 리뷰 조회

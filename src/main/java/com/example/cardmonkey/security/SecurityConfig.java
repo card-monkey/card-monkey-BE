@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private static final String[] PUBLIC_URLS = { //이 URL은 권한 검사 안 함
-            "/signup", "/login", "/logout"
+            "/signup", "/login", "/logout", "/card/benefit" // cardbenefit 나중에 지우기!!
     };
 
     private final JwtProvider jwtProvider;

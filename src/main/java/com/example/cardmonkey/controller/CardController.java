@@ -1,6 +1,7 @@
 package com.example.cardmonkey.controller;
 
 import com.example.cardmonkey.dto.CardDTO;
+import com.example.cardmonkey.dto.CardDetailDTO;
 import com.example.cardmonkey.entity.Card;
 import com.example.cardmonkey.service.CardService;
 import io.swagger.annotations.Api;
@@ -61,7 +62,6 @@ public class CardController {
     @GetMapping("/card/company")
     @ApiOperation(value = "카드사 검색", notes = "카드사로 검색합니다.")
     public List<CardDTO> searchCardByCompany(@RequestParam(name = "company") String cardCompany) {
-
         return cardService.searchCardByCompany(cardCompany);
     }
 
@@ -79,8 +79,9 @@ public class CardController {
      */
     @GetMapping("/card/benefit")
     @ApiOperation(value = "카드 혜택 검색", notes = "카드 혜택으로 검색합니다.")
-    public String searchCardByBenefit(@RequestParam String benefit) {
-        return null;
+    public List<CardDTO> searchCardByBenefit(@RequestParam(name = "benefit") String cardBenefit) {
+        System.out.println(cardBenefit);
+        return cardService.searchCardByBenefit(cardBenefit);
     }
 
     /**
@@ -97,8 +98,8 @@ public class CardController {
      */
     @GetMapping("/card/{id}")
     @ApiOperation(value = "카드 상세정보 조회", notes = "카드 상세정보를 조회합니다.")
-    public String selectCardById(@PathVariable String id) {
-        return null;
+    public CardDetailDTO selectCardById(@PathVariable Long id) {
+        return cardService.selectCardById(id);
     }
 
     /**

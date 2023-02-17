@@ -1,9 +1,6 @@
 package com.example.cardmonkey.jwt;
 
 import com.example.cardmonkey.dto.LoginRequest;
-import com.example.cardmonkey.dto.MemberDTO;
-import com.example.cardmonkey.repository.TokenRepository;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.Builder;
 import lombok.Getter;

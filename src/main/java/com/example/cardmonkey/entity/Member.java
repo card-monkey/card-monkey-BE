@@ -40,4 +40,8 @@ public class Member {
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
+
+    public void updateBenefit(Benefit newBenefit) {
+        this.benefit = newBenefit;
+    }
 }

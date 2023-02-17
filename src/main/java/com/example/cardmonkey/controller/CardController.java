@@ -3,6 +3,7 @@ package com.example.cardmonkey.controller;
 import com.example.cardmonkey.dto.FavorResponseDTO;
 import com.example.cardmonkey.dto.LoginRequest;
 import com.example.cardmonkey.service.CardService;
+import com.example.cardmonkey.dto.CardByBenefitResDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -39,11 +40,10 @@ public class CardController {
     /**
      * 관심혜택 맞춤 카드
      */
-    @GetMapping("/card/benefit/{id}")
-    @ApiOperation(value = "관심 혜택 맞춤 카드", notes = "회원가입시 선택한 3가지의 혜택으로 카드를 추천합니다.")
-    public String selectCardByBenefit(@PathVariable String id,
-                              @RequestParam String search) {
-        return null;
+    @GetMapping("/card/benefit/{userId}")
+    @ApiOperation(value = "관심 혜택 맞춤 카드", notes = "회원가입 시 선택한 3가지의 혜택으로 카드를 추천합니다.")
+    public List<CardByBenefitResDTO> CardByChooseBenefitList(@PathVariable String userId) {
+        return cardService.findCardByChooseBenefit(userId);
     }
 
     /**

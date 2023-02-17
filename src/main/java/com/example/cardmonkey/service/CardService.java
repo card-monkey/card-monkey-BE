@@ -1,6 +1,7 @@
 package com.example.cardmonkey.service;
 
 import com.example.cardmonkey.dto.FavorResponseDTO;
+import com.example.cardmonkey.dto.CardByBenefitResDTO;
 import com.example.cardmonkey.entity.Card;
 import com.example.cardmonkey.entity.Favor;
 import com.example.cardmonkey.entity.Member;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +39,7 @@ public class CardService {
      * 관심혜택 맞춤 카드
      */
 
+
     /**
      * 나의 관심 카드 (찜 내역)
      */
@@ -57,6 +61,31 @@ public class CardService {
     /**
      * 카드 혜택 검색
      */
+    public List<CardByBenefitResDTO> findCardByChooseBenefit(String userId) {
+        Member findMember = memberRepository.findByUserId(userId);
+
+        List<String> benefits = findMember.getBenefit().makeBenefitList();
+
+        List<CardByBenefitResDTO> result = new ArrayList<>();
+        for (String benefit : benefits) {
+            long qty = cardRepository.countByBenefit(benefit);
+            int index = (int) (Math.random() * qty);
+
+            Card findCard = cardRepository.recommendRandomCardByBenefit(benefit, index);
+
+            CardByBenefitResDTO dto = CardByBenefitResDTO.builder()
+                    .id(findCard.getId())
+                    .benefit(benefit)
+                    .name(findCard.getName())
+                    .company(findCard.getCompany())
+                    .image(findCard.getImageURL())
+                    .type(findCard.getCardType())
+                    .build();
+
+            result.add(dto);
+        }
+        return result;
+    }
 
     /**
      * 전체 카드 조회

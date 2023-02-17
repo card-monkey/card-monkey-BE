@@ -32,8 +32,9 @@ public class CardService {
      */
 
     /**
-     * 인기 TOP 3 카드
+     * 인기 TOP 3 카드(우석)
      */
+
 
     /**
      * 관심혜택 맞춤 카드

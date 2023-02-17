@@ -1,5 +1,9 @@
 package com.example.cardmonkey.service;
 
+import com.example.cardmonkey.dto.*;
+import com.example.cardmonkey.entity.Card;
+import com.example.cardmonkey.entity.Favor;
+import com.example.cardmonkey.entity.Member;
 import com.example.cardmonkey.dto.FavorResponseDTO;
 import com.example.cardmonkey.dto.CardByBenefitResDTO;
 import com.example.cardmonkey.dto.PaidReqDTO;
@@ -14,12 +18,16 @@ import com.example.cardmonkey.repository.PaidRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -42,8 +50,30 @@ public class CardService {
     }
 
     /**
-     * 인기 TOP 3 카드
+     * 인기 TOP 3 카드 (찜 많은 순)
      */
+    public List<CardResponseDTO> selectFavorByRank() {
+        List<Card> cardList = new ArrayList<>();
+        List<CardResponseDTO> cardResponseDTOList = new ArrayList<>();
+        List<Object[]> objects = favorRepository.selectFavorByRank();
+        if (objects.size() == 0 || objects == null) {
+            return null;
+        }
+        return getCardResponseDTOS(cardList, cardResponseDTOList, objects, cardRepository);
+    }
+
+    /**
+     * 인기 TOP 3 카드정보를 받아 옴
+     */
+    static List<CardResponseDTO> getCardResponseDTOS(List<Card> cardList, List<CardResponseDTO> cardResponseDTOList, List<Object[]> objects, CardRepository cardRepository) {
+        int cnt = 0;
+        for (Object[] obj : objects) {
+            cardList.add(cardRepository.findAllById(((BigInteger) obj[0]).longValue()));
+            cardResponseDTOList.add(cnt, new CardResponseDTO(cardList.get(cnt), ((BigInteger) obj[1]).intValue()));
+            cnt++;
+        }
+        return cardResponseDTOList;
+    }
 
     /**
      * 관심혜택 맞춤 카드
@@ -98,16 +128,15 @@ public class CardService {
         return cards;
     }
 
-
     /**
      * 카드명 검색(우석)
      */
     public List<CardDTO> searchCardByName(String cardName){
 
         List<CardDTO> cards = cardRepository.findAllByNameContains(cardName)
-                                            .stream()
-                                            .map(card -> new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()))
-                                            .collect(Collectors.toList());
+                .stream()
+                .map(card -> new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()))
+                .collect(Collectors.toList());
 
         return cards;
     }
@@ -120,134 +149,135 @@ public class CardService {
         List<Card> temp = cardRepository.findAll();
         Benefit tempBenefit;
 
-            if(cardBenefit.equals("coffee")){
-                for(int i = 0; i < temp.size(); i++) {
-                    tempBenefit = temp.get(i).getBenefit();
-                    try {
-                        if (tempBenefit.getCoffee() != null) {
-                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-                        }
-                    } catch (Exception e){
-
+        if(cardBenefit.equals("coffee")){
+            for(int i = 0; i < temp.size(); i++) {
+                tempBenefit = temp.get(i).getBenefit();
+                try {
+                    if (tempBenefit.getCoffee() != null) {
+                        answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
                     }
-                }
-                return answer;
-            }
-
-            if(cardBenefit.equals("transportation")){
-                for(int i = 0; i < temp.size(); i++) {
-                    tempBenefit = temp.get(i).getBenefit();
-                    try {
-                        if (tempBenefit.getTransportation() != null) {
-                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-                        }
-                    } catch (Exception e){
-
-                    }
-                }
-                return answer;
-            }
-
-            if(cardBenefit.equals("movie")){
-                for(int i = 0; i < temp.size(); i++) {
-                    tempBenefit = temp.get(i).getBenefit();
-                    try {
-                        if (tempBenefit.getMovie() != null) {
-                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-                        }
-                    } catch (Exception e){
-
-                    }
-                }
-                return answer;
-            }
-
-            if(cardBenefit.equals("delivery")){
-                for(int i = 0; i < temp.size(); i++) {
-                    tempBenefit = temp.get(i).getBenefit();
-                    try {
-                        if (tempBenefit.getDelivery() != null) {
-                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-                        }
-                    } catch (Exception e){
-
-                    }
-                }
-                return answer;
-            }
-
-            if(cardBenefit.equals("phone")){
-                for(int i = 0; i < temp.size(); i++) {
-                    tempBenefit = temp.get(i).getBenefit();
-                    try {
-                        if (tempBenefit.getPhone() != null) {
-                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-                        }
-                    }catch (Exception e){
-
-                    }
+                } catch (Exception e){
 
                 }
-                return answer;
-            }
-
-            if(cardBenefit.equals("gas")){
-                for(int i = 0; i < temp.size(); i++) {
-                    tempBenefit = temp.get(i).getBenefit();
-                    try {
-                        if (tempBenefit.getGas() != null) {
-                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-                        }
-                    }catch (Exception e){
-
-                    }
-                }
-                return answer;
-            }
-
-            if(cardBenefit.equals("simplepayment")){
-                for(int i = 0; i < temp.size(); i++) {
-                    tempBenefit = temp.get(i).getBenefit();
-                    try {
-                        if (tempBenefit.getSimplePayment() != null) {
-                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-                        }
-                    } catch (Exception e){
-
-                    }
-                }
-                return answer;
-            }
-
-            if(cardBenefit.equals("tax")){
-                for(int i = 0; i < temp.size(); i++) {
-                    tempBenefit = temp.get(i).getBenefit();
-                    try {
-                        if (tempBenefit.getTax() != null) {
-                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-                        }
-                    } catch (Exception e){
-
-                    }
-                }
-                return answer;
-            }
-
-            if(cardBenefit.equals("shopping")){
-                for(int i = 0; i < temp.size(); i++) {
-                    tempBenefit = temp.get(i).getBenefit();
-                    try {
-                        if (tempBenefit.getShopping() != null) {
-                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-                        }
-                    } catch (Exception e){
-
-                    }
-                }
-                return answer;
             }
             return answer;
+        }
+
+        if(cardBenefit.equals("transportation")){
+            for(int i = 0; i < temp.size(); i++) {
+                tempBenefit = temp.get(i).getBenefit();
+                try {
+                    if (tempBenefit.getTransportation() != null) {
+                        answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                    }
+                } catch (Exception e){
+
+                }
+            }
+            return answer;
+        }
+
+        if(cardBenefit.equals("movie")){
+            for(int i = 0; i < temp.size(); i++) {
+                tempBenefit = temp.get(i).getBenefit();
+                try {
+                    if (tempBenefit.getMovie() != null) {
+                        answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                    }
+                } catch (Exception e){
+
+                }
+            }
+            return answer;
+        }
+
+        if(cardBenefit.equals("delivery")){
+            for(int i = 0; i < temp.size(); i++) {
+                tempBenefit = temp.get(i).getBenefit();
+                try {
+                    if (tempBenefit.getDelivery() != null) {
+                        answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                    }
+                } catch (Exception e){
+
+                }
+            }
+            return answer;
+        }
+
+        if(cardBenefit.equals("phone")){
+            for(int i = 0; i < temp.size(); i++) {
+                tempBenefit = temp.get(i).getBenefit();
+                try {
+                    if (tempBenefit.getPhone() != null) {
+                        answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                    }
+                }catch (Exception e){
+
+                }
+
+            }
+            return answer;
+        }
+
+        if(cardBenefit.equals("gas")){
+            for(int i = 0; i < temp.size(); i++) {
+                tempBenefit = temp.get(i).getBenefit();
+                try {
+                    if (tempBenefit.getGas() != null) {
+                        answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                    }
+                }catch (Exception e){
+
+                }
+            }
+            return answer;
+        }
+
+        if(cardBenefit.equals("simplepayment")){
+            for(int i = 0; i < temp.size(); i++) {
+                tempBenefit = temp.get(i).getBenefit();
+                try {
+                    if (tempBenefit.getSimplePayment() != null) {
+                        answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                    }
+                } catch (Exception e){
+
+                }
+            }
+            return answer;
+        }
+
+        if(cardBenefit.equals("tax")){
+            for(int i = 0; i < temp.size(); i++) {
+                tempBenefit = temp.get(i).getBenefit();
+                try {
+                    if (tempBenefit.getTax() != null) {
+                        answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                    }
+                } catch (Exception e){
+
+                }
+            }
+            return answer;
+        }
+
+        if(cardBenefit.equals("shopping")){
+            for(int i = 0; i < temp.size(); i++) {
+                tempBenefit = temp.get(i).getBenefit();
+                try {
+                    if (tempBenefit.getShopping() != null) {
+                        answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                    }
+                } catch (Exception e){
+
+                }
+            }
+            return answer;
+        }
+        return answer;
     }
+
 
     /**
      * 전체 카드 조회(우석)
@@ -255,13 +285,12 @@ public class CardService {
     public List<CardDTO> selectAllCard(){
 
         List<CardDTO> cards = cardRepository.findAll()
-                                            .stream()
-                                            .map(card -> new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()))
-                                            .collect(Collectors.toList());
+                .stream()
+                .map(card -> new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()))
+                .collect(Collectors.toList());
 
         return cards;
     }
-
 
     /**
      * 카드 상세정보 조회(우석)

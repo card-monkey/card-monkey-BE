@@ -1,23 +1,14 @@
 package com.example.cardmonkey.controller;
 
-import com.example.cardmonkey.dto.FavorResponseDTO;
-import com.example.cardmonkey.dto.LoginRequest;
-import com.example.cardmonkey.dto.PaidResDTO;
+import com.example.cardmonkey.dto.*;
 import com.example.cardmonkey.service.CardService;
 import com.example.cardmonkey.dto.CardByBenefitResDTO;
-import com.example.cardmonkey.dto.CardDTO;
-import com.example.cardmonkey.dto.CardDetailDTO;
-import com.example.cardmonkey.entity.Card;
-import com.example.cardmonkey.service.CardService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -41,8 +32,8 @@ public class CardController {
      */
     @GetMapping("/card/rank")
     @ApiOperation(value = "인기 TOP 3 카드", notes = "구입된 횟수가 많은 인기 TOP 3 카드를 조회합니다.")
-    public String selectTopThreeCard() {
-        return null;
+    public List<CardResponseDTO> selectTopThreeCard() {
+        return cardService.selectFavorByRank();
     }
 
     /**

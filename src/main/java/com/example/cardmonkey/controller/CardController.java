@@ -2,6 +2,7 @@ package com.example.cardmonkey.controller;
 
 import com.example.cardmonkey.dto.*;
 import com.example.cardmonkey.service.CardService;
+import com.example.cardmonkey.dto.CardByBenefitResDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -54,43 +55,44 @@ public class CardController {
     }
 
     /**
-     * 카드사 검색
+     * 카드사 검색(우석)
      */
     @GetMapping("/card/company")
     @ApiOperation(value = "카드사 검색", notes = "카드사로 검색합니다.")
-    public String searchCardByCompany(@RequestParam String search) {
-        return null;
+    public List<CardDTO> searchCardByCompany(@RequestParam(name = "company") String cardCompany) {
+        return cardService.searchCardByCompany(cardCompany);
     }
 
     /**
-     * 카드명 검색
+     * 카드명 검색(우석)
      */
     @GetMapping("/card/name")
     @ApiOperation(value = "카드명 검색", notes = "카드명으로 검색합니다.")
-    public String searchCardByName(@RequestParam String search) {
-        return null;
+    public List<CardDTO> searchCardByName(@RequestParam(name = "name") String cardName) {
+        return cardService.searchCardByName(cardName);
     }
 
     /**
-     * 카드 혜택 검색
+     * 카드 혜택 검색(우석)
      */
     @GetMapping("/card/benefit")
     @ApiOperation(value = "카드 혜택 검색", notes = "카드 혜택으로 검색합니다.")
-    public String searchCardByBenefit(@RequestParam String search) {
-        return null;
+    public List<CardDTO> searchCardByBenefit(@RequestParam(name = "benefit") String cardBenefit) {
+        System.out.println(cardBenefit);
+        return cardService.searchCardByBenefit(cardBenefit);
     }
 
     /**
-     * 전체 카드 조회
+     * 전체 카드 조회(우석)
      */
     @GetMapping("/card")
     @ApiOperation(value = "전체 카드 조회", notes = "전체 카드를 조회합니다.")
-    public String selectAllCard() {
-        return null;
+    public List<CardDTO> selectAllCard() {
+        return cardService.selectAllCard();
     }
 
     /**
-     * 카드 상세정보 조회
+     * 카드 상세정보 조회(우석)
      */
     @GetMapping("/card/{id}")
     @ApiOperation(value = "카드 상세정보 조회", notes = "카드 상세정보를 조회합니다.")

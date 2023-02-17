@@ -1,6 +1,9 @@
 package com.example.cardmonkey.jwt;
 
 import com.example.cardmonkey.dto.LoginRequest;
+import com.example.cardmonkey.dto.MemberDTO;
+import com.example.cardmonkey.repository.TokenRepository;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +25,7 @@ public class JwtFilter extends OncePerRequestFilter {
     //시큐리티 필터 전에 유저 권한이나 인증 관련 정보를 넘겨주는 클래스
 
     private final JwtProvider jwtProvider;
+
     @Builder
     private JwtFilter(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
@@ -37,7 +41,9 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         //filter에서 header를 가져옴
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
         try {
+            //token 값에서 유효값 (id, role)을 추출하여 userDTO를 만듦
             LoginRequest user = jwtProvider.getMemberDtoOf(authorizationHeader);
             SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
                     user,

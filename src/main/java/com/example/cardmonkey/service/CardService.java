@@ -71,75 +71,140 @@ public class CardService {
     }
 
     /**
-     * 카드 혜택 검색
+     * 카드 혜택 검색(우석)
      */
     public List<CardDTO> searchCardByBenefit(String cardBenefit){
-        List<CardDTO> temp = null;
-        System.out.println("여기?");
-        switch (cardBenefit){
-            case "coffee" :
-                List<CardDTO> cards = cardRepository.findAll()
-                        .stream()
-                        .map(card -> ("yes").equals(card.getBenefit().getCoffee()) ? new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()) : null)
-                        .collect(Collectors.toList());
-                temp = cards;
-                break;
-            case "transportation" :
-                List<CardDTO> cards2 = cardRepository.findAll()
-                        .stream()
-                        .map(card -> ("yes").equals(card.getBenefit().getTransportation()) ? new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()) : null)
-                        .collect(Collectors.toList());
-                temp = cards2;
-                break;
-            case "movie" :
-                List<CardDTO> cards3 = cardRepository.findAll()
-                        .stream()
-                        .map(card -> ("yes").equals(card.getBenefit().getMovie()) ? new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()) : null)
-                        .collect(Collectors.toList());
-                temp = cards3;
-                break;
-            case "delivery" :
-                List<CardDTO> cards4 = cardRepository.findAll()
-                        .stream()
-                        .map(card -> ("yes").equals(card.getBenefit().getDelivery()) ? new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()) : null)
-                        .collect(Collectors.toList());
-                temp = cards4;
-                break;
-            case "phone" :
-                List<Card> temp1 = cardRepository.findAll();
-                List<CardDTO> cards5 = null;
-                //
-                break;
-            case "gas" :
-                List<CardDTO> cards6 = cardRepository.findAll()
-                        .stream()
-                        .map(card -> ("yes").equals(card.getBenefit().getGas()) ? new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()) : null)
-                        .collect(Collectors.toList());
-                temp = cards6;
-                break;
-            case "simplepayment" :
-                List<CardDTO> cards7 = cardRepository.findAll()
-                        .stream()
-                        .map(card -> ("yes").equals(card.getBenefit().getSimplePayment()) ? new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()) : null)
-                        .collect(Collectors.toList());
-                temp = cards7;
-                break;
-            case "tax" :
-                List<CardDTO> cards8 = cardRepository.findAll()
-                        .stream()
-                        .map(card -> ("yes").equals(card.getBenefit().getTax()) ? new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()) : null)
-                        .collect(Collectors.toList());
-                temp = cards8;
-                break;
-            case "shopping" :
-                List<CardDTO> cards9 = cardRepository.findAll()
-                        .stream()
-                        .map(card -> ("yes").equals(card.getBenefit().getShopping()) ? new CardDTO(card.getId(), card.getName(), card.getCompany(), card.getCardType(), card.getImageURL()) : null)
-                        .collect(Collectors.toList());
-                temp = cards9;
-                break;
-        }
-       return temp;
+        List<CardDTO> answer = new ArrayList<>();
+        List<Card> temp = cardRepository.findAll();
+        Benefit tempBenefit;
+
+            if(cardBenefit.equals("coffee")){
+                for(int i = 0; i < temp.size(); i++) {
+                    tempBenefit = temp.get(i).getBenefit();
+                    try {
+                        if (tempBenefit.getCoffee() != null) {
+                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                        }
+                    } catch (Exception e){
+
+                    }
+                }
+                return answer;
+            }
+
+            if(cardBenefit.equals("transportation")){
+                for(int i = 0; i < temp.size(); i++) {
+                    tempBenefit = temp.get(i).getBenefit();
+                    try {
+                        if (tempBenefit.getTransportation() != null) {
+                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                        }
+                    } catch (Exception e){
+
+                    }
+                }
+                return answer;
+            }
+
+            if(cardBenefit.equals("movie")){
+                for(int i = 0; i < temp.size(); i++) {
+                    tempBenefit = temp.get(i).getBenefit();
+                    try {
+                        if (tempBenefit.getMovie() != null) {
+                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                        }
+                    } catch (Exception e){
+
+                    }
+                }
+                return answer;
+            }
+
+            if(cardBenefit.equals("delivery")){
+                for(int i = 0; i < temp.size(); i++) {
+                    tempBenefit = temp.get(i).getBenefit();
+                    try {
+                        if (tempBenefit.getDelivery() != null) {
+                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                        }
+                    } catch (Exception e){
+
+                    }
+                }
+                return answer;
+            }
+
+            if(cardBenefit.equals("phone")){
+                for(int i = 0; i < temp.size(); i++) {
+                    tempBenefit = temp.get(i).getBenefit();
+                    try {
+                        if (tempBenefit.getPhone() != null) {
+                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                        }
+                    }catch (Exception e){
+
+                    }
+
+                }
+                return answer;
+            }
+
+            if(cardBenefit.equals("gas")){
+                for(int i = 0; i < temp.size(); i++) {
+                    tempBenefit = temp.get(i).getBenefit();
+                    try {
+                        if (tempBenefit.getGas() != null) {
+                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                        }
+                    }catch (Exception e){
+
+                    }
+                }
+                return answer;
+            }
+
+            if(cardBenefit.equals("simplepayment")){
+                for(int i = 0; i < temp.size(); i++) {
+                    tempBenefit = temp.get(i).getBenefit();
+                    try {
+                        if (tempBenefit.getSimplePayment() != null) {
+                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                        }
+                    } catch (Exception e){
+
+                    }
+                }
+                return answer;
+            }
+
+            if(cardBenefit.equals("tax")){
+                for(int i = 0; i < temp.size(); i++) {
+                    tempBenefit = temp.get(i).getBenefit();
+                    try {
+                        if (tempBenefit.getTax() != null) {
+                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                        }
+                    } catch (Exception e){
+
+                    }
+                }
+                return answer;
+            }
+
+            if(cardBenefit.equals("shopping")){
+                for(int i = 0; i < temp.size(); i++) {
+                    tempBenefit = temp.get(i).getBenefit();
+                    try {
+                        if (tempBenefit.getShopping() != null) {
+                            answer.add(new CardDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
+                        }
+                    } catch (Exception e){
+
+                    }
+                }
+                return answer;
+            }
+            return answer;
     }
 
     /**

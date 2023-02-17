@@ -75,7 +75,7 @@ public class CardController {
     }
 
     /**
-     * 카드 혜택 검색
+     * 카드 혜택 검색(우석)
      */
     @GetMapping("/card/benefit")
     @ApiOperation(value = "카드 혜택 검색", notes = "카드 혜택으로 검색합니다.")
@@ -94,7 +94,7 @@ public class CardController {
     }
 
     /**
-     * 카드 상세정보 조회
+     * 카드 상세정보 조회(우석)
      */
     @GetMapping("/card/{id}")
     @ApiOperation(value = "카드 상세정보 조회", notes = "카드 상세정보를 조회합니다.")

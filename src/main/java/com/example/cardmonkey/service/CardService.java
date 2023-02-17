@@ -6,10 +6,7 @@ import com.example.cardmonkey.dto.PaidReqDTO;
 import com.example.cardmonkey.dto.PaidResDTO;
 import com.example.cardmonkey.dto.CardDTO;
 import com.example.cardmonkey.dto.CardDetailDTO;
-import com.example.cardmonkey.entity.Benefit;
-import com.example.cardmonkey.entity.Card;
-import com.example.cardmonkey.entity.CardType;
-import com.example.cardmonkey.entity.Member;
+import com.example.cardmonkey.entity.*;
 import com.example.cardmonkey.repository.CardRepository;
 import com.example.cardmonkey.repository.FavorRepository;
 import com.example.cardmonkey.repository.MemberRepository;
@@ -17,19 +14,12 @@ import com.example.cardmonkey.repository.PaidRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor

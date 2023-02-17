@@ -64,7 +64,7 @@ public class CardController {
     }
 
     /**
-     * 카드사 검색
+     * 카드사 검색(우석)
      */
     @GetMapping("/card/company")
     @ApiOperation(value = "카드사 검색", notes = "카드사로 검색합니다.")
@@ -73,7 +73,7 @@ public class CardController {
     }
 
     /**
-     * 카드명 검색
+     * 카드명 검색(우석)
      */
     @GetMapping("/card/name")
     @ApiOperation(value = "카드명 검색", notes = "카드명으로 검색합니다.")
@@ -92,7 +92,7 @@ public class CardController {
     }
 
     /**
-     * 전체 카드 조회
+     * 전체 카드 조회(우석)
      */
     @GetMapping("/card")
     @ApiOperation(value = "전체 카드 조회", notes = "전체 카드를 조회합니다.")

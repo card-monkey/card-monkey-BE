@@ -25,12 +25,10 @@ public class JwtFilter extends OncePerRequestFilter {
     //시큐리티 필터 전에 유저 권한이나 인증 관련 정보를 넘겨주는 클래스
 
     private final JwtProvider jwtProvider;
-    private final TokenRepository tokenRepository;
 
     @Builder
     private JwtFilter(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
-        this.tokenRepository = tokenRepository;
     }
 
     public static JwtFilter of(JwtProvider jwtProvider) {
@@ -56,7 +54,6 @@ public class JwtFilter extends OncePerRequestFilter {
             logger.error("ExpiredJwtException : expired token");
         } catch (Exception exception) {
             logger.error("Exception : no token");
-            return ;
         }
     }
 

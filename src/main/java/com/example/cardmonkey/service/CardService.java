@@ -1,9 +1,6 @@
 package com.example.cardmonkey.service;
 
-import com.example.cardmonkey.dto.FavorResponseDTO;
-import com.example.cardmonkey.dto.CardByBenefitResDTO;
-import com.example.cardmonkey.dto.PaidReqDTO;
-import com.example.cardmonkey.dto.PaidResDTO;
+import com.example.cardmonkey.dto.*;
 import com.example.cardmonkey.entity.Card;
 import com.example.cardmonkey.entity.Favor;
 import com.example.cardmonkey.entity.Member;
@@ -16,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,8 +40,30 @@ public class CardService {
     }
 
     /**
-     * 인기 TOP 3 카드
+     * 인기 TOP 3 카드 (찜 많은 순)
      */
+    public List<CardResponseDTO> selectFavorByRank() {
+        List<Card> cardList = new ArrayList<>();
+        List<CardResponseDTO> cardResponseDTOList = new ArrayList<>();
+        List<Object[]> objects = favorRepository.selectFavorByRank();
+        if (objects.size() == 0 || objects == null) {
+            return null;
+        }
+        return getCardResponseDTOS(cardList, cardResponseDTOList, objects, cardRepository);
+    }
+
+    /**
+     * 인기 TOP 3 카드정보를 받아 옴
+     */
+    static List<CardResponseDTO> getCardResponseDTOS(List<Card> cardList, List<CardResponseDTO> cardResponseDTOList, List<Object[]> objects, CardRepository cardRepository) {
+        int cnt = 0;
+        for (Object[] obj : objects) {
+            cardList.add(cardRepository.findAllById(((BigInteger) obj[0]).longValue()));
+            cardResponseDTOList.add(cnt, new CardResponseDTO(cardList.get(cnt), ((BigInteger) obj[1]).intValue()));
+            cnt++;
+        }
+        return cardResponseDTOList;
+    }
 
     /**
      * 관심혜택 맞춤 카드

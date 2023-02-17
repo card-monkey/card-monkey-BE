@@ -23,18 +23,29 @@ public class JwtProvider {
      */
     public String makeToken(Member member) {
         Date now = new Date();
-//        Date expiration = new Date(now.getTime() + Duration.ofDays(1).toMillis());
-
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + Duration.ofMinutes(30).toMillis())) // 만료기일
+                .setExpiration(new Date(now.getTime() + Duration.ofMinutes(30).toMillis())) // 만료시간 30분
                 .claim("userId", member.getUserId())
-                .claim("name", member.getName())
                 .claim("role", member.getRole())
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
+    }
+
+    public LoginRequest getMemberDtoOf(String authorizationHeader) {
+        validationAuthorizationHeader(authorizationHeader); //토큰이 Bearer로 시작하는지 형식이 맞는지 확인
+        String token = "";
+        Claims claims = null;
+        try {
+            token = extractToken(authorizationHeader); // header에서 토큰 추출 (Bearer 제거)
+            claims = parsingToken(token);
+            return new LoginRequest(claims);
+        } catch (Exception e) {
+            logger.error("토큰이 없습니다.(2)");
+        }
+        return null;
     }
 
     /**
@@ -47,28 +58,14 @@ public class JwtProvider {
                 .getBody();
     }
 
-    public LoginRequest getMemberDtoOf(String authorizationHeader) {
-        validationAuthorizationHeader(authorizationHeader); //토큰이 Bearer로 시작하는지 형식이 맞는지 확인
-        String token = "";
-        Claims claims = null;
-
-        try {
-            token = extractToken(authorizationHeader); // header에서 토큰 추출 (Bearer 제거)
-            claims = parsingToken(token);
-            return new LoginRequest(claims);
-        } catch (Exception e) {
-            logger.error("토큰이 없습니다.(2)");
-        }
-        return null;
-    }
-
     /**
      * 헤더값이 유효한지 검증하는 메서드
      */
-    private void validationAuthorizationHeader(String header) {
+    private boolean validationAuthorizationHeader(String header) {
         if (header == null || !header.startsWith(jwtProperties.getTokenPrefix())) {
             logger.error("토큰이 없습니다.(1)");
         }
+        return true;
     }
 
     /**

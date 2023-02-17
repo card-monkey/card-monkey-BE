@@ -3,7 +3,7 @@ package com.example.cardmonkey.controller;
 import com.example.cardmonkey.dto.LoginRequest;
 import com.example.cardmonkey.dto.LoginResponse;
 import com.example.cardmonkey.dto.PasswordDTO;
-import com.example.cardmonkey.dto.SignupRequest;
+import com.example.cardmonkey.dto.SignupReqDTO;
 import com.example.cardmonkey.service.MemberService;
 import com.example.cardmonkey.entity.Token;
 import com.example.cardmonkey.repository.TokenRepository;
@@ -25,10 +25,7 @@ public class AuthController {
      */
     @PostMapping("/signup")
     @ApiOperation(value = "회원가입", notes = "회원가입을 수행합니다.")
-    public String signUp(@RequestBody SignupRequest req) {
-        if (req.getUserId() == null || req.getPassword() == null || req.getName() == null) {
-            return "모든 값을 입력해주세요";
-        }
+    public String signUp(@RequestBody SignupReqDTO req) {
         return memberService.signup(req);
     }
 

@@ -1,5 +1,10 @@
 package com.example.cardmonkey.controller;
 
+import com.example.cardmonkey.dto.FavorResponseDTO;
+import com.example.cardmonkey.dto.LoginRequest;
+import com.example.cardmonkey.dto.PaidResDTO;
+import com.example.cardmonkey.service.CardService;
+import com.example.cardmonkey.dto.CardByBenefitResDTO;
 import com.example.cardmonkey.dto.CardDTO;
 import com.example.cardmonkey.dto.CardDetailDTO;
 import com.example.cardmonkey.entity.Card;
@@ -7,7 +12,10 @@ import com.example.cardmonkey.service.CardService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +27,13 @@ public class CardController {
 
     private final CardService cardService;
 
-    /**
-     * 신청한 카드 내역
-     */
+    /*=============================================
+     * 카드 신청내역 조회 : code by 주찬혁(crossbell8368)
+     =============================================*/
     @GetMapping("/paid/{id}")
     @ApiOperation(value = "신청한 카드 내역", notes = "신청한 카드 내역을 조회합니다.")
-    public String selectPaidCard(@PathVariable String id) {
-        return null;
+    public List<PaidResDTO> selectPaidCard(@PathVariable("id") String memberId) {
+        return cardService.paidList(memberId);
     }
 
     /**
@@ -40,11 +48,10 @@ public class CardController {
     /**
      * 관심혜택 맞춤 카드
      */
-    @GetMapping("/card/benefit/{id}")
-    @ApiOperation(value = "관심 혜택 맞춤 카드", notes = "회원가입시 선택한 3가지의 혜택으로 카드를 추천합니다.")
-    public String selectCardByBenefit(@PathVariable String id,
-                              @RequestParam String search) {
-        return null;
+    @GetMapping("/card/benefit/{userId}")
+    @ApiOperation(value = "관심 혜택 맞춤 카드", notes = "회원가입 시 선택한 3가지의 혜택으로 카드를 추천합니다.")
+    public List<CardByBenefitResDTO> CardByChooseBenefitList(@PathVariable String userId) {
+        return cardService.findCardByChooseBenefit(userId);
     }
 
     /**
@@ -52,8 +59,8 @@ public class CardController {
      */
     @GetMapping("/card/favor/{id}")
     @ApiOperation(value = "찜한 카드 내역", notes = "내가 찜한 카드들의 내역을 조회합니다.")
-    public String selectCardByFavor(@PathVariable String id) {
-        return null;
+    public List<FavorResponseDTO> selectCardByFavor(@PathVariable String id) {
+        return cardService.selectCardByFavor(id);
     }
 
     /**
@@ -98,26 +105,31 @@ public class CardController {
      */
     @GetMapping("/card/{id}")
     @ApiOperation(value = "카드 상세정보 조회", notes = "카드 상세정보를 조회합니다.")
-    public CardDetailDTO selectCardById(@PathVariable Long id) {
-        return cardService.selectCardById(id);
+    public String selectCardById(@PathVariable String id) {
+        return null;
     }
 
-    /**
-     * 카드 신청
-     */
+    /*=============================================
+     * 카드신청 : code by 주찬혁(crossbell8368)
+     =============================================*/
     @PostMapping("/card/{id}")
     @ApiOperation(value = "카드 신청", notes = "카드를 신청합니다.")
-    public String payCard(@PathVariable String id) {
-        return null;
+    public String payCard(@PathVariable("id") Long id, Authentication authentication) {
+        LoginRequest loginRequest = (LoginRequest) authentication.getPrincipal();
+        String memberId = loginRequest.getUserId();
+        return cardService.paidRequest(id, memberId);
     }
 
     /**
-     * 찜하기 (관심상품)
+     * 찜하기 or 찜하기 취소 (관심상품)
      */
     @PostMapping("/card/{id}/favor")
-    @ApiOperation(value = "카드 찜하기", notes = "관심있는 카드를 찜합니다.")
-    public String favorCard(@PathVariable String id) {
-        return null;
+    @ApiOperation(value = "찜 기능", notes = "유저가 관광지를 찜 하거나 찜 취소를 할 수 있습니다.")
+    public String favorCard(@PathVariable Long id, Authentication authentication) {
+        LoginRequest loginRequest = (LoginRequest) authentication.getPrincipal();
+        String memberId = loginRequest.getUserId();
+        System.out.println(memberId);
+        return cardService.saveFavor(id, memberId);
     }
 
     /**
@@ -147,12 +159,14 @@ public class CardController {
         return null;
     }
 
-    /**
-     * 신청한 카드 취소
-     */
+    /*=============================================
+    * 카드신청 취소 : code by 주찬혁(crossbell8368)
+    =============================================*/
     @DeleteMapping("/paid/{id}")
     @ApiOperation(value = "신청한 카드 취소", notes = "신청한 카드를 취소합니다.")
-    public String deletePaidCard(@PathVariable String id) {
-        return null;
+    public String deletePaidCard(@PathVariable("id") Long id, Authentication authentication) {
+        LoginRequest loginRequest = (LoginRequest) authentication.getPrincipal();
+        String memberId = loginRequest.getUserId();
+        return cardService.paidCancel(id, memberId);
     }
 }

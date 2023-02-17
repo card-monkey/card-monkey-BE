@@ -28,7 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final TokenRepository tokenRepository;
 
     @Builder
-    private JwtFilter(JwtProvider jwtProvider, TokenRepository tokenRepository) {
+    private JwtFilter(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
         this.tokenRepository = tokenRepository;
     }
@@ -40,9 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws IOException, ServletException {
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         //filter에서 header를 가져옴
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
@@ -58,7 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
             logger.error("ExpiredJwtException : expired token");
         } catch (Exception exception) {
             logger.error("Exception : no token");
-            return;
+            return ;
         }
     }
 

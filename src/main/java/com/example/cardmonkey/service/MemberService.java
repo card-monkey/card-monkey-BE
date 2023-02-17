@@ -1,8 +1,10 @@
 package com.example.cardmonkey.service;
 
+import com.example.cardmonkey.dto.ChangeBenefitReqDTO;
 import com.example.cardmonkey.dto.LoginRequest;
 import com.example.cardmonkey.dto.LoginResponse;
-import com.example.cardmonkey.dto.SignupRequest;
+import com.example.cardmonkey.dto.SignupReqDTO;
+import com.example.cardmonkey.entity.Benefit;
 import com.example.cardmonkey.entity.Member;
 import com.example.cardmonkey.jwt.JwtProvider;
 import com.example.cardmonkey.repository.MemberRepository;
@@ -24,17 +26,23 @@ public class MemberService {
     /**
      * 회원가입
      */
-    public String signup(SignupRequest req) {
+    @Transactional
+    public String signup(SignupReqDTO req) {
+        if (req.getUserId() == null || req.getPassword() == null || req.getName() == null) {
+            return "모든 값을 입력해주세요";
+        }
         if (memberRepository.existsByUserId(req.getUserId())) {
             return req.getUserId() + "는 이미 존재하는 아이디 입니다.";
         }
-        String encodingPassword = encodingPassword(req.getPassword());
-        req.setPassword(encodingPassword);
+
+        req.setPassword(encodingPassword(req.getPassword()));
         if (req.getRole() == null || req.getRole().equals("")) {
             req.setRole("ROLE_USER");
         }
-        Member member = req.toEntity();
+        Member member = req.toEntity(req.getBenefit());
+
         memberRepository.save(member);
+
         return "회원가입 완료";
     }
 
@@ -100,5 +108,12 @@ public class MemberService {
     @Transactional
     public void deleteAccount(String id) {
         memberRepository.deleteByUserId(id);
+    }
+
+    @Transactional
+    public void changeBenefit(String userId, ChangeBenefitReqDTO req) {
+        Member findMember = memberRepository.findByUserId(userId);
+
+        findMember.updateBenefit(new Benefit(req.getBenefit()));
     }
 }

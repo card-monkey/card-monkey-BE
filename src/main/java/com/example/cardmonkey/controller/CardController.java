@@ -1,14 +1,20 @@
 package com.example.cardmonkey.controller;
 
+import com.example.cardmonkey.dto.CardByBenefitResDTO;
+import com.example.cardmonkey.service.CardService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Api(tags = {"카드 서비스"}, description = "카드 서비스를 담당합니다.")
 public class CardController {
+
+    private final CardService cardService;
 
     /**
      * 신청한 카드 내역
@@ -31,11 +37,10 @@ public class CardController {
     /**
      * 관심혜택 맞춤 카드
      */
-    @GetMapping("/card/benefit/{id}")
-    @ApiOperation(value = "관심 혜택 맞춤 카드", notes = "회원가입시 선택한 3가지의 혜택으로 카드를 추천합니다.")
-    public String selectCardByBenefit(@PathVariable String id,
-                              @RequestParam String search) {
-        return null;
+    @GetMapping("/card/benefit/{userId}")
+    @ApiOperation(value = "관심 혜택 맞춤 카드", notes = "회원가입 시 선택한 3가지의 혜택으로 카드를 추천합니다.")
+    public List<CardByBenefitResDTO> CardByChooseBenefitList(@PathVariable String userId) {
+        return cardService.findCardByChooseBenefit(userId);
     }
 
     /**

@@ -1,14 +1,17 @@
 package com.example.cardmonkey.service;
 
+import com.example.cardmonkey.dto.CardByBenefitResDTO;
 import com.example.cardmonkey.entity.Card;
-import com.example.cardmonkey.entity.Favor;
 import com.example.cardmonkey.entity.Member;
 import com.example.cardmonkey.repository.CardRepository;
-import com.example.cardmonkey.repository.FavorRepository;
+// import com.example.cardmonkey.repository.FavorRepository;
 import com.example.cardmonkey.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +20,7 @@ public class CardService {
 
     private final CardRepository cardRepository;
     private final MemberRepository memberRepository;
-    private final FavorRepository favorRepository;
+    // private final FavorRepository favorRepository;
 
     /**
      * 신청한 카드 내역
@@ -30,6 +33,7 @@ public class CardService {
     /**
      * 관심혜택 맞춤 카드
      */
+
 
     /**
      * 나의 관심 카드 (찜 내역)
@@ -46,6 +50,31 @@ public class CardService {
     /**
      * 카드 혜택 검색
      */
+    public List<CardByBenefitResDTO> findCardByChooseBenefit(String userId) {
+        Member findMember = memberRepository.findByUserId(userId);
+
+        List<String> benefits = findMember.getBenefit().makeBenefitList();
+
+        List<CardByBenefitResDTO> result = new ArrayList<>();
+        for (String benefit : benefits) {
+            long qty = cardRepository.countByBenefit(benefit);
+            int index = (int) (Math.random() * qty);
+
+            Card findCard = cardRepository.recommendRandomCardByBenefit(benefit, index);
+
+            CardByBenefitResDTO dto = CardByBenefitResDTO.builder()
+                    .id(findCard.getId())
+                    .benefit(benefit)
+                    .name(findCard.getName())
+                    .company(findCard.getCompany())
+                    .image(findCard.getImageURL())
+                    .type(findCard.getCardType())
+                    .build();
+
+            result.add(dto);
+        }
+        return result;
+    }
 
     /**
      * 전체 카드 조회

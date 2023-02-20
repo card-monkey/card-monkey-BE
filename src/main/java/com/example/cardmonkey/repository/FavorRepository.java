@@ -18,6 +18,6 @@ public interface FavorRepository extends JpaRepository<Favor, Long> {
             "FROM favor f " +
             "WHERE f.status = 1 " +
             "GROUP BY f.card_id " +
-            "ORDER BY CNT DESC LIMIT 3;", nativeQuery = true)
+            "ORDER BY CNT DESC LIMIT 5;", nativeQuery = true)
     List<Object[]> selectFavorByRank();
 }

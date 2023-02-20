@@ -31,7 +31,7 @@ public class CardController {
      * 인기 TOP 3 카드
      */
     @GetMapping("/card/rank")
-    @ApiOperation(value = "인기 TOP 3 카드", notes = "구입된 횟수가 많은 인기 TOP 3 카드를 조회합니다.")
+    @ApiOperation(value = "인기 TOP 3 카드", notes = "찜 횟수가 많은 인기 TOP 3 카드를 조회합니다.")
     public List<CardResponseDTO> selectTopThreeCard() {
         return cardService.selectFavorByRank();
     }

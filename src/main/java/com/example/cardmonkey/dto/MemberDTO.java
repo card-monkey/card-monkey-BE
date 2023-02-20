@@ -24,14 +24,11 @@ public class MemberDTO {
     private String role;
 
     public Member toEntity(){
-        return null;
-
-        /* 예시코드 =====================
-        return User.builder()
-                .email(this.email)
+        return Member.builder()
+                .userId(this.userId)
                 .password(this.password)
+                .name(this.name)
                 .build();
-         ===================== */
     }
 
     public MemberDTO(Claims claims) {

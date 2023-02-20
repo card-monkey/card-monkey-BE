@@ -17,6 +17,6 @@ import javax.persistence.Table;
 public class Token {
 
     @Id
-    @Column(name="bolocked_token")
+    @Column(name="blocked_token")
     private String token;
 }

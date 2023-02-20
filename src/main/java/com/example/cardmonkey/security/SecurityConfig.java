@@ -13,6 +13,12 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Collections;
+import java.util.List;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -34,11 +40,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http)throws Exception {
 
         return http
-                .authorizeRequests()// 다음 리퀘스트에 대한 사용권한 체크
+                .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
                 .mvcMatchers(PUBLIC_URLS).permitAll() // 가입 및 인증 주소는 누구나 접근가능
                 .and()
-                .authorizeRequests()// 다음 리퀘스트에 대한 사용권한 체크
-                .anyRequest().authenticated()// 그외 나머지 요청은 모두 인증된 회원만 접근 가능
+                .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
+                .anyRequest().authenticated() // 그외 나머지 요청은 모두 인증된 회원만 접근 가능
+                .and()
+                .cors() // cors 활성화
                 .and()
                 .csrf().disable() // rest api이므로 csrf 보안이 필요없으므로 disable처리
                 .httpBasic().disable() // 기본설정 사용안함. 기본설정은 비인증시 로그인폼 화면으로 리다이렉트 된다.
@@ -55,5 +63,20 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() { //시큐리티 filter 제외, 그러나 OncePerRequestFilter는 시큐리티 필터가 아니라서 로직실행
         return (web) -> web.ignoring().mvcMatchers(PUBLIC_URLS);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*")); // 모든 Origin에서의 요청을 허용
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")); // 해당 Http Methods를 사용하는 요청을 허용
+        configuration.setAllowedHeaders(List.of("authorization", "content-type", "x-auth-token")); // 해당 헤더를 사용하는 요청을 허용
+        configuration.setExposedHeaders(Collections.singletonList("x-auth-token")); // 헤더에 CSRF 토큰이 있는 요청에 대해 모든 응답 헤더를 노출
+        configuration.setAllowCredentials(true); // 사용자 자격 증명(쿠키, 인증키) 사용을 허용할 것
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // 모든 URL에 대해 위의 설정을 사용해 CORS 처리를 할 것
+        return source;
     }
 }

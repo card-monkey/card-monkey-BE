@@ -96,8 +96,9 @@ public class CardController {
      */
     @GetMapping("/card/{id}")
     @ApiOperation(value = "카드 상세정보 조회", notes = "카드 상세정보를 조회합니다.")
-    public String selectCardById(@PathVariable String id) {
-        return null;
+    public CardDetailDTO selectCardById(@PathVariable Long id) {
+
+        return cardService.selectCardById(id);
     }
 
     /*=============================================

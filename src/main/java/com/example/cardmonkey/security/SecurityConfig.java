@@ -2,8 +2,10 @@ package com.example.cardmonkey.security;
 
 import com.example.cardmonkey.jwt.JwtFilter;
 import com.example.cardmonkey.jwt.JwtProvider;
+import com.example.cardmonkey.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,6 +24,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
+@Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
@@ -30,6 +33,7 @@ public class SecurityConfig {
     };
 
     private final JwtProvider jwtProvider;
+    private final TokenService tokenService;
 
     @Bean //회원 insert 서비스에서 비밀번호 암호화/복호화에 사용됨
     public PasswordEncoder passwordEncoderParser() {
@@ -55,7 +59,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token으로 인증할것이므로 세션필요없으므로 생성안함.
                 .and()
                 .addFilterBefore(
-                        JwtFilter.of(jwtProvider),
+                        JwtFilter.of(jwtProvider,tokenService),
                         UsernamePasswordAuthenticationFilter.class).build();
         //인증을 처리하는 기본필터 UsernamePasswordAuthenticationFilter 대신 별도의 인증 로직을 가진 필터를 생성하고 사용하고 싶을 때 아래와 같이 필터를 등록하고 사용
     }

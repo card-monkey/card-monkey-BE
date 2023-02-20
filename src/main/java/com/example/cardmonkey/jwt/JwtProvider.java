@@ -2,7 +2,10 @@ package com.example.cardmonkey.jwt;
 
 import com.example.cardmonkey.dto.LoginRequest;
 import com.example.cardmonkey.entity.Member;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +30,8 @@ public class JwtProvider {
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + Duration.ofMinutes(30).toMillis())) // 만료시간 30분
+                // TODO: 테스트를 위해서 일시적으로 토큰 유효기간 재설정
+                .setExpiration(new Date(now.getTime() + Duration.ofDays(3).toMillis())) // 만료시간 3일
                 .claim("userId", member.getUserId())
                 .claim("role", member.getRole())
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())

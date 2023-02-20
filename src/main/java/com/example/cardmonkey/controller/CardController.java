@@ -20,9 +20,10 @@ public class CardController {
     /**
      * 몽키차트 TOP 5 카드 (찜)
      */
+    // TODO: 리팩토링
     @GetMapping("/card/rank")
     @ApiOperation(value = "몽키차트 TOP 5 카드", notes = "찜 횟수가 많은 TOP 5 카드를 조회합니다.")
-    public List<CardResponseDTO> selectTopThreeCard() {
+    public List<CardByFavorResDTO> selectTopThreeCard() {
         return cardService.selectFavorByRank();
     }
 
@@ -40,8 +41,8 @@ public class CardController {
      */
     @GetMapping("/card/name")
     @ApiOperation(value = "카드명 검색", notes = "카드명으로 검색합니다.")
-    public List<CardDTO> searchCardByName(@RequestParam(name = "search") String cardName) {
-        return cardService.searchCardByName(cardName);
+    public List<CardResDTO> searchCardByName(@RequestParam(name = "search") String name) {
+        return cardService.searchCardByName(name);
     }
 
     /**
@@ -49,8 +50,8 @@ public class CardController {
      */
     @GetMapping("/card/company")
     @ApiOperation(value = "카드사 검색", notes = "카드사로 검색합니다.")
-    public List<CardDTO> searchCardByCompany(@RequestParam(name = "search") String cardCompany) {
-        return cardService.searchCardByCompany(cardCompany);
+    public List<CardResDTO> searchCardByCompany(@RequestParam(name = "search") String company) {
+        return cardService.searchCardByCompany(company);
     }
 
     /**
@@ -58,8 +59,8 @@ public class CardController {
      */
     @GetMapping("/card/benefit")
     @ApiOperation(value = "카드 혜택 검색", notes = "카드 혜택으로 검색합니다.")
-    public List<CardDTO> searchCardByBenefit(@RequestParam(name = "search") String cardBenefit) {
-        return cardService.searchCardByBenefit(cardBenefit);
+    public List<CardResDTO> searchCardByBenefit(@RequestParam(name = "search") String benefit) {
+        return cardService.searchCardByBenefit(benefit);
     }
 
     /**
@@ -67,7 +68,7 @@ public class CardController {
      */
     @GetMapping("/card")
     @ApiOperation(value = "전체 카드 조회", notes = "전체 카드를 조회합니다.")
-    public List<CardDTO> selectAllCard() {
+    public List<CardResDTO> selectAllCard() {
         return cardService.selectAllCard();
     }
 
@@ -76,13 +77,14 @@ public class CardController {
      */
     @GetMapping("/card/{cardId}")
     @ApiOperation(value = "카드 상세정보 조회", notes = "카드 상세정보를 조회합니다.")
-    public CardDetailDTO selectCardById(@PathVariable Long cardId) {
+    public CardDetailResDTO selectCardById(@PathVariable Long cardId) {
         return cardService.selectCardById(cardId);
     }
 
     /**
      * 카드 신청 내역
      */
+    // TODO: 리팩토링
     @GetMapping("/paid/{userId}")
     @ApiOperation(value = "신청한 카드 내역", notes = "신청한 카드 내역을 조회합니다.")
     public List<PaidResDTO> selectPaidCard(@PathVariable String userId) {
@@ -92,28 +94,31 @@ public class CardController {
     /**
      * 카드 신청
      */
+    // TODO: 리팩토링
     @PostMapping("/card/{cardId}")
     @ApiOperation(value = "카드 신청", notes = "카드를 신청합니다.")
     public String payCard(@PathVariable Long cardId, Authentication authentication) {
-        LoginRequest loginRequest = (LoginRequest) authentication.getPrincipal();
-        String memberId = loginRequest.getUserId();
+        LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
+        String memberId = loginReqDTO.getUserId();
         return cardService.paidRequest(cardId, memberId);
     }
 
     /**
      * 카드 신청 취소
      */
+    // TODO: 리팩토링
     @DeleteMapping("/paid/{cardId}")
     @ApiOperation(value = "신청한 카드 취소", notes = "신청한 카드를 취소합니다.")
     public String deletePaidCard(@PathVariable Long cardId, Authentication authentication) {
-        LoginRequest loginRequest = (LoginRequest) authentication.getPrincipal();
-        String memberId = loginRequest.getUserId();
+        LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
+        String memberId = loginReqDTO.getUserId();
         return cardService.paidCancel(cardId, memberId);
     }
 
     /**
      * 나의 관심(찜) 카드 내역
      */
+    // TODO: 리팩토링
     @GetMapping("/card/favor/{userId}")
     @ApiOperation(value = "찜한 카드 내역", notes = "내가 찜한 카드들의 내역을 조회합니다.")
     public List<FavorResponseDTO> selectCardByFavor(@PathVariable String userId) {
@@ -123,11 +128,12 @@ public class CardController {
     /**
      * 찜하기 or 찜하기 취소
      */
+    // TODO: 리팩토링
     @PostMapping("/card/{cardId}/favor")
     @ApiOperation(value = "찜 기능", notes = "유저가 카드를 찜 하거나 찜 취소를 할 수 있습니다.")
     public String favorCard(@PathVariable Long cardId, Authentication authentication) {
-        LoginRequest loginRequest = (LoginRequest) authentication.getPrincipal();
-        String memberId = loginRequest.getUserId();
+        LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
+        String memberId = loginReqDTO.getUserId();
         return cardService.saveFavor(cardId, memberId);
     }
 

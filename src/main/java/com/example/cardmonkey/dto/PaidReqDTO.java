@@ -4,11 +4,10 @@ import com.example.cardmonkey.entity.Member;
 import com.example.cardmonkey.entity.Paid;
 import lombok.*;
 
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
-@Setter
 public class PaidReqDTO {
     private Member member;
     private Card card;

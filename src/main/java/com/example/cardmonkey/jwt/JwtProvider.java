@@ -1,6 +1,6 @@
 package com.example.cardmonkey.jwt;
 
-import com.example.cardmonkey.dto.LoginRequest;
+import com.example.cardmonkey.dto.LoginReqDTO;
 import com.example.cardmonkey.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
@@ -38,14 +38,14 @@ public class JwtProvider {
                 .compact();
     }
 
-    public LoginRequest getMemberDtoOf(String authorizationHeader) {
+    public LoginReqDTO getMemberDtoOf(String authorizationHeader) {
         validationAuthorizationHeader(authorizationHeader); //토큰이 Bearer로 시작하는지 형식이 맞는지 확인
         String token = "";
         Claims claims = null;
         try {
             token = extractToken(authorizationHeader); // header에서 토큰 추출 (Bearer 제거)
             claims = parsingToken(token);
-            return new LoginRequest(claims);
+            return new LoginReqDTO(claims);
         } catch (Exception e) {
             logger.error("토큰이 없습니다.(2)");
         }

@@ -1,7 +1,7 @@
 package com.example.cardmonkey.controller;
 
-import com.example.cardmonkey.dto.LoginRequest;
-import com.example.cardmonkey.dto.LoginResponse;
+import com.example.cardmonkey.dto.LoginReqDTO;
+import com.example.cardmonkey.dto.LoginResDTO;
 import com.example.cardmonkey.dto.SignupReqDTO;
 import com.example.cardmonkey.entity.Token;
 import com.example.cardmonkey.repository.TokenRepository;
@@ -28,7 +28,7 @@ public class AuthController {
     @PostMapping("/signup")
     @ApiOperation(value = "회원가입", notes = "회원가입을 수행합니다.")
     public String signUp(@RequestBody SignupReqDTO req) {
-        return memberService.signup(req);
+        return memberService.join(req);
     }
 
     /**
@@ -36,7 +36,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     @ApiOperation(value = "로그인", notes = "로그인을 수행합니다.")
-    public LoginResponse signIn(@RequestBody LoginRequest req) {
+    public LoginResDTO signIn(@RequestBody LoginReqDTO req) {
         return memberService.login(req);
     }
 

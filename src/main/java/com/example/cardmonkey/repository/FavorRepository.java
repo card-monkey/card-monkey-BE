@@ -14,10 +14,11 @@ public interface FavorRepository extends JpaRepository<Favor, Long> {
 
     List<Favor> findAllByMember(Member member);
 
-    @Query(value = "SELECT f.card_id, count(*) AS CNT " +
+    @Query(value =
+            "SELECT f.card_id, count(*) as CNT " +
             "FROM favor f " +
             "WHERE f.status = 1 " +
             "GROUP BY f.card_id " +
-            "ORDER BY CNT DESC LIMIT 3;", nativeQuery = true)
+            "ORDER BY CNT DESC LIMIT 5;", nativeQuery = true)
     List<Object[]> selectFavorByRank();
 }

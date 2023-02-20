@@ -5,11 +5,10 @@ import com.example.cardmonkey.entity.CardType;
 import com.example.cardmonkey.entity.Favor;
 import lombok.*;
 
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
-@ToString
 @AllArgsConstructor
+@Builder
 public class FavorResponseDTO {
 
     private Long id;

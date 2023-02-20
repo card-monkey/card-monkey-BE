@@ -7,12 +7,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CardByBenefitResDTO {
+public class CardResDTO {
 
     private Long id;
     private String name;
     private String company;
     private String image;
     private CardType type;
-    private String benefit;
 }

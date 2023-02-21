@@ -26,6 +26,21 @@ public class Favor {
     @JoinColumn(name = "card_id")
     private Card card;
 
-    @Column(nullable = false)
-    private int status; // 1 = 찜하기, 0 = 찜하기 취소
+    public void setFavorMember(Member member) {
+        this.member = member;
+        // member.getFavors().add(this);
+    }
+
+    public void setFavorCard(Card card) {
+        this.card = card;
+    }
+
+    public static Favor createFavor(Member member, Card card) {
+        Favor favor = new Favor();
+
+        favor.setFavorMember(member);
+        favor.setFavorCard(card);
+
+        return favor;
+    }
 }

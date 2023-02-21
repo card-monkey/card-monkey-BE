@@ -1,9 +1,13 @@
 package com.example.cardmonkey.service;
 
-import com.example.cardmonkey.dto.*;
+import com.example.cardmonkey.dto.CardByBenefitResDTO;
+import com.example.cardmonkey.dto.CardByFavorResDTO;
+import com.example.cardmonkey.dto.CardDetailResDTO;
+import com.example.cardmonkey.dto.CardResDTO;
 import com.example.cardmonkey.entity.Card;
 import com.example.cardmonkey.entity.Favor;
 import com.example.cardmonkey.entity.Member;
+import com.example.cardmonkey.entity.Paid;
 import com.example.cardmonkey.repository.CardRepository;
 import com.example.cardmonkey.repository.FavorRepository;
 import com.example.cardmonkey.repository.MemberRepository;
@@ -92,7 +96,7 @@ public class CardService {
     public List<CardResDTO> searchCardByName(String name){
         return cardRepository.findAllByNameContains(name)
                 .stream()
-                .map(c -> new CardResDTO(c.getId(), c.getName(), c.getCompany(), c.getImageURL(), c.getCardType()))
+                .map(CardResDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -102,7 +106,7 @@ public class CardService {
     public List<CardResDTO> searchCardByCompany(String company){
         return cardRepository.findAllByCompanyContains(company)
                 .stream()
-                .map(c -> new CardResDTO(c.getId(), c.getName(), c.getCompany(), c.getImageURL(), c.getCardType()))
+                .map(CardResDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -112,7 +116,7 @@ public class CardService {
     public List<CardResDTO> searchCardByBenefit(String benefit) {
         return cardRepository.findAllByBenefit(benefit)
                 .stream()
-                .map(c -> new CardResDTO(c.getId(), c.getName(), c.getCompany(), c.getImageURL(), c.getCardType()))
+                .map(CardResDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -122,7 +126,7 @@ public class CardService {
     public List<CardResDTO> selectAllCard(){
         return cardRepository.findAll()
                 .stream()
-                .map(c -> new CardResDTO(c.getId(), c.getName(), c.getCompany(), c.getImageURL(), c.getCardType()))
+                .map(CardResDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -146,109 +150,76 @@ public class CardService {
     /**
      * 카드 신청 내역
      */
-    // TODO: 리팩토링
-    public List<PaidResDTO> paidList(String userId) {
-        return paidRepository.findByMember(memberRepository.findByUserId(userId).get()).stream()
-                .map(PaidResDTO::new)
+    public List<CardResDTO> paidList(String userId) {
+        Member findMember = memberRepository.findByUserId(userId).get();
+
+        return paidRepository.findAllByMemberId(findMember.getId())
+                .stream()
+                .map(CardResDTO::new)
                 .collect(Collectors.toList());
     }
 
     /**
      * 카드 신청
      */
-    // TODO: 리팩토링
     @Transactional
-    public String paidRequest(Long id, String memberId) {
-        if (memberId != null){
-            Member member = memberRepository.findByUserId(memberId).get();
-            Card card = cardRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-            try { // 기존 신청내역이 있는지 확인
-                if(paidRepository.findAllByMemberAndCard(member, card) != null){
-                    return "Apply record exist";
-                }else{
-                    paidRepository.save(new PaidReqDTO(member, card).toEntity());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "Apply failed";
-            }
-            return "Apply success";
-        }else{
-            return "No member Info";
+    public String savePaid(String userId, Long cardId) {
+        Member findMember = memberRepository.findByUserId(userId).get();
+        Card findCard = cardRepository.findById(cardId).get();
+
+        if (!checkExistsPaid(findMember.getId(), findCard.getId())) {
+            Paid paid = Paid.createPaid(findMember, findCard);
+            paidRepository.save(paid);
+            return "카드신청 완료";
+        } else {
+            return "이미 신청하신 카드입니다.";
         }
     }
 
     /**
      * 카드 신청 취소
      */
-    // TODO: 리팩토링
     @Transactional
-    public String paidCancel(Long id, String memberId) {
-        if (memberId != null) {
-            Member member = memberRepository.findByUserId(memberId).get();
-            Card card = cardRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-            try {
-                paidRepository.delete(
-                        paidRepository.findAllByMemberAndCard(member, card)
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "delete failed";
-            }
-            return "delete success";
-        }else{
-            return "No member Info";
+    public String cancelPaid(String userId, Long cardId) {
+        Member findMember = memberRepository.findByUserId(userId).get();
+        Card findCard = cardRepository.findById(cardId).get();
+
+        if (checkExistsPaid(findMember.getId(), findCard.getId())) {
+            paidRepository.deleteByMemberIdAndCardId(findMember.getId(), findCard.getId());
+            return "카드신청 취소 완료";
+        } else {
+            return "신청내역이 존재하지 않습니다.";
         }
     }
 
     /**
      * 나의 관심(찜) 카드 내역
      */
-    // TODO: 리팩토링
-    public List<FavorResponseDTO> selectCardByFavor(String userId) {
-        Member member = memberRepository.findByUserId(userId).get();
-        List<Favor> favors = favorRepository.findAllByMember(member);
-        return favors.stream().map(FavorResponseDTO::new).collect(Collectors.toList());
+    public List<CardResDTO> selectCardByFavor(String userId) {
+        Member findMember = memberRepository.findByUserId(userId).get();
+
+        return favorRepository.findAllByMemberId(findMember.getId())
+                .stream()
+                .map(CardResDTO::new)
+                .collect(Collectors.toList());
     }
 
     /**
      * 찜하기 or 찜하기 취소
      */
-    // TODO: 리팩토링
     @Transactional
-    public String saveFavor(Long id, String memberId) {
-        if (memberId != null) {
-            Member member = memberRepository.findByUserId(memberId).get();
-            Card card = cardRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-            if (favorRepository.findAllByCardAndMember(card, member) == null) {
-                updateFavorStatus("new" , null, 1, card, member);
-                return "찜하기 완료";
-            } else {
-                if (favorRepository.findAllByCardAndMember(card, member).getStatus() == 1) {
-                    updateFavorStatus(null, favorRepository.findAllByCardAndMember(card, member), 0, card, null);
-                    return "찜하기 취소 완료";
-                } else {
-                    updateFavorStatus(null, favorRepository.findAllByCardAndMember(card, member), 1, card, null);
-                    return "찜하기 완료";
-                }
-            }
-        }
-        return "회원 정보가 없습니다.";
-    }
+    public String saveFavor(String userId, Long cardId) {
+        Member findMember = memberRepository.findByUserId(userId).get();
+        Card findCard = cardRepository.findById(cardId).get();
 
-    /**
-     * 찜 상태 업데이트 (관심상품)
-     */
-    // TODO: 리팩토링
-    @Transactional
-    public void updateFavorStatus(String check, Favor res, int status, Card card, Member member) {
-        Favor favor;
-        if (check == null) {
-            favor = new Favor(res.getId(), res.getMember(), card, status);
+        if (!checkExistsFavor(findMember.getId(), findCard.getId())) {
+            Favor favor = Favor.createFavor(findMember, findCard);
+            favorRepository.save(favor);
+            return "찜하기 완료";
         } else {
-            favor = new Favor(null, member, card, status);
+            favorRepository.deleteByMemberIdAndCardId(findMember.getId(), findCard.getId());
+            return "찜하기 취소 완료";
         }
-        favorRepository.save(favor);
     }
 
     /**
@@ -259,158 +230,11 @@ public class CardService {
      * 리뷰 선택
      */
 
-    // public List<CardResDTO> searchCardByBenefit(String benefit){
-    //     List<CardResDTO> answer = new ArrayList<>();
-    //     List<Card> temp = cardRepository.findAll();
-    //     Benefit tempBenefit;
-    //
-    //     if(benefit.equals("coffee")){
-    //         for(int i = 0; i < temp.size(); i++) {
-    //             tempBenefit = temp.get(i).getBenefit();
-    //             try {
-    //                 if (tempBenefit.getCoffee() != null) {
-    //                     answer.add(new CardResDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-    //                 }
-    //             } catch (Exception e){
-    //
-    //             }
-    //         }
-    //         return answer;
-    //     }
-    //
-    //     if(benefit.equals("transportation")){
-    //         for(int i = 0; i < temp.size(); i++) {
-    //             tempBenefit = temp.get(i).getBenefit();
-    //             try {
-    //                 if (tempBenefit.getTransportation() != null) {
-    //                     answer.add(new CardResDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-    //                 }
-    //             } catch (Exception e){
-    //
-    //             }
-    //         }
-    //         return answer;
-    //     }
-    //
-    //     if(benefit.equals("movie")){
-    //         for(int i = 0; i < temp.size(); i++) {
-    //             tempBenefit = temp.get(i).getBenefit();
-    //             try {
-    //                 if (tempBenefit.getMovie() != null) {
-    //                     answer.add(new CardResDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-    //                 }
-    //             } catch (Exception e){
-    //
-    //             }
-    //         }
-    //         return answer;
-    //     }
-    //
-    //     if(benefit.equals("delivery")){
-    //         for(int i = 0; i < temp.size(); i++) {
-    //             tempBenefit = temp.get(i).getBenefit();
-    //             try {
-    //                 if (tempBenefit.getDelivery() != null) {
-    //                     answer.add(new CardResDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-    //                 }
-    //             } catch (Exception e){
-    //
-    //             }
-    //         }
-    //         return answer;
-    //     }
-    //
-    //     if(benefit.equals("phone")){
-    //         for(int i = 0; i < temp.size(); i++) {
-    //             tempBenefit = temp.get(i).getBenefit();
-    //             try {
-    //                 if (tempBenefit.getPhone() != null) {
-    //                     answer.add(new CardResDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-    //                 }
-    //             }catch (Exception e){
-    //
-    //             }
-    //
-    //         }
-    //         return answer;
-    //     }
-    //
-    //     if(benefit.equals("gas")){
-    //         for(int i = 0; i < temp.size(); i++) {
-    //             tempBenefit = temp.get(i).getBenefit();
-    //             try {
-    //                 if (tempBenefit.getGas() != null) {
-    //                     answer.add(new CardResDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-    //                 }
-    //             }catch (Exception e){
-    //
-    //             }
-    //         }
-    //         return answer;
-    //     }
-    //
-    //     if(benefit.equals("simplepayment")){
-    //         for(int i = 0; i < temp.size(); i++) {
-    //             tempBenefit = temp.get(i).getBenefit();
-    //             try {
-    //                 if (tempBenefit.getSimplePayment() != null) {
-    //                     answer.add(new CardResDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-    //                 }
-    //             } catch (Exception e){
-    //
-    //             }
-    //         }
-    //         return answer;
-    //     }
-    //
-    //     if(benefit.equals("tax")){
-    //         for(int i = 0; i < temp.size(); i++) {
-    //             tempBenefit = temp.get(i).getBenefit();
-    //             try {
-    //                 if (tempBenefit.getTax() != null) {
-    //                     answer.add(new CardResDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-    //                 }
-    //             } catch (Exception e){
-    //
-    //             }
-    //         }
-    //         return answer;
-    //     }
-    //
-    //     if(benefit.equals("shopping")){
-    //         for(int i = 0; i < temp.size(); i++) {
-    //             tempBenefit = temp.get(i).getBenefit();
-    //             try {
-    //                 if (tempBenefit.getShopping() != null) {
-    //                     answer.add(new CardResDTO(temp.get(i).getId(), temp.get(i).getName(), temp.get(i).getCompany(), temp.get(i).getCardType(), temp.get(i).getImageURL()));
-    //                 }
-    //             } catch (Exception e){
-    //
-    //             }
-    //         }
-    //         return answer;
-    //     }
-    //     return answer;
-    // }
+    private boolean checkExistsPaid(Long memberId, Long cardId) {
+        return paidRepository.existsByMemberIdAndCardId(memberId, cardId);
+    }
 
-    // public CardDetailResDTO selectCardById(Long id){
-    //     Optional<Card> cardFoundById = cardRepository.findById(id);
-    //     Benefit tempBenefit = cardFoundById.get().getBenefit();
-    //     ArrayList<String> benefit = new ArrayList<>();
-    //
-    //     if(tempBenefit.getCoffee() != null) benefit.add("coffee");
-    //     if(tempBenefit.getTransportation() != null) benefit.add("transportation");
-    //     if(tempBenefit.getMovie() != null) benefit.add("movie");
-    //     if(tempBenefit.getDelivery() != null) benefit.add("delivery");
-    //     if(tempBenefit.getPhone() != null) benefit.add("phone");
-    //     if(tempBenefit.getGas() != null) benefit.add("gas");
-    //     if(tempBenefit.getSimplePayment() != null) benefit.add("simplepayment");
-    //     if(tempBenefit.getTax() != null) benefit.add("tax");
-    //     if(tempBenefit.getShopping() != null) benefit.add("shopping");
-    //
-    //     CardDetailResDTO cardDetail = new CardDetailResDTO(cardFoundById.get().getId(), cardFoundById.get().getName(), cardFoundById.get().getCompany(), cardFoundById.get().getCardType(), cardFoundById.get().getImageURL(), benefit);
-    //
-    //     return cardDetail;
-    // }
-
+    private boolean checkExistsFavor(Long memberId, Long cardId) {
+        return favorRepository.existsByMemberIdAndCardId(memberId, cardId);
+    }
 }

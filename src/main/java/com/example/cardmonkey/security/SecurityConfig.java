@@ -29,7 +29,9 @@ import java.util.List;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_URLS = { //이 URL은 권한 검사 안 함
-            "/signup", "/login", "/logout", "/userIdValidation"
+            "/signup", "/login", "/logout", "/userIdValidation",
+            "/swagger-resources/**", "/swagger-ui.html","/swagger-ui/**",
+            "/v2/api-docs", "/webjars/**", "/v3/api-docs**"
     };
 
     private final JwtProvider jwtProvider;

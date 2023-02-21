@@ -1,12 +1,10 @@
 package com.example.cardmonkey.jwt;
 
-import com.example.cardmonkey.dto.LoginRequest;
-import com.example.cardmonkey.dto.MemberDTO;
-import com.example.cardmonkey.repository.TokenRepository;
+import com.example.cardmonkey.dto.LoginReqDTO;
 import com.example.cardmonkey.service.TokenService;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,7 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (!tokenService.isTokenExists(authorizationHeader)) {
             try {
                 //token 값에서 유효값 (id, role)을 추출하여 userDTO를 만듦
-                LoginRequest user = jwtProvider.getMemberDtoOf(authorizationHeader);
+                LoginReqDTO user = jwtProvider.getMemberDtoOf(authorizationHeader);
                 SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
                         user,
                         "",

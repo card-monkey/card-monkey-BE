@@ -100,8 +100,8 @@ public class MemberService {
     /**
      * 회원 탈퇴
      */
-    public String deleteAccount(String id) {
-        memberRepository.deleteByUserId(id);
+    public String deleteAccount(String userId) {
+        memberRepository.deleteByUserId(userId);
         return "회원탈퇴 완료";
     }
 
@@ -115,7 +115,7 @@ public class MemberService {
     /**
      * 비밀번호 일치여부 확인
      */
-    private boolean checkPassword(String inputPassword, String memberPassword) {
-        return passwordEncoder.matches(inputPassword, memberPassword);
+    private boolean checkPassword(String inputPassword, String originPassword) {
+        return passwordEncoder.matches(inputPassword, originPassword);
     }
 }

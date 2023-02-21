@@ -84,57 +84,52 @@ public class CardController {
     /**
      * 카드 신청 내역
      */
-    // TODO: 리팩토링
     @GetMapping("/paid/{userId}")
     @ApiOperation(value = "신청한 카드 내역", notes = "신청한 카드 내역을 조회합니다.")
-    public List<PaidResDTO> selectPaidCard(@PathVariable String userId) {
+    public List<CardResDTO> selectPaidCard(@PathVariable String userId) {
         return cardService.paidList(userId);
     }
 
     /**
      * 카드 신청
      */
-    // TODO: 리팩토링
     @PostMapping("/card/{cardId}")
     @ApiOperation(value = "카드 신청", notes = "카드를 신청합니다.")
     public String payCard(@PathVariable Long cardId, Authentication authentication) {
         LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
-        String memberId = loginReqDTO.getUserId();
-        return cardService.paidRequest(cardId, memberId);
+        String userId = loginReqDTO.getUserId();
+        return cardService.savePaid(userId, cardId);
     }
 
     /**
      * 카드 신청 취소
      */
-    // TODO: 리팩토링
     @DeleteMapping("/paid/{cardId}")
     @ApiOperation(value = "신청한 카드 취소", notes = "신청한 카드를 취소합니다.")
     public String deletePaidCard(@PathVariable Long cardId, Authentication authentication) {
         LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
-        String memberId = loginReqDTO.getUserId();
-        return cardService.paidCancel(cardId, memberId);
+        String userId = loginReqDTO.getUserId();
+        return cardService.cancelPaid(userId, cardId);
     }
 
     /**
      * 나의 관심(찜) 카드 내역
      */
-    // TODO: 리팩토링
     @GetMapping("/card/favor/{userId}")
     @ApiOperation(value = "찜한 카드 내역", notes = "내가 찜한 카드들의 내역을 조회합니다.")
-    public List<FavorResponseDTO> selectCardByFavor(@PathVariable String userId) {
+    public List<CardResDTO> selectCardByFavor(@PathVariable String userId) {
         return cardService.selectCardByFavor(userId);
     }
 
     /**
      * 찜하기 or 찜하기 취소
      */
-    // TODO: 리팩토링
     @PostMapping("/card/{cardId}/favor")
     @ApiOperation(value = "찜 기능", notes = "유저가 카드를 찜 하거나 찜 취소를 할 수 있습니다.")
     public String favorCard(@PathVariable Long cardId, Authentication authentication) {
         LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
-        String memberId = loginReqDTO.getUserId();
-        return cardService.saveFavor(cardId, memberId);
+        String userId = loginReqDTO.getUserId();
+        return cardService.saveFavor(userId, cardId);
     }
 
     /**

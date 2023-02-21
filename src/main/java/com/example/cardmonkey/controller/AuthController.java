@@ -3,6 +3,7 @@ package com.example.cardmonkey.controller;
 import com.example.cardmonkey.dto.LoginReqDTO;
 import com.example.cardmonkey.dto.LoginResDTO;
 import com.example.cardmonkey.dto.SignupReqDTO;
+import com.example.cardmonkey.dto.ValidationDTO;
 import com.example.cardmonkey.entity.Token;
 import com.example.cardmonkey.repository.TokenRepository;
 import com.example.cardmonkey.service.MemberService;
@@ -29,6 +30,15 @@ public class AuthController {
     @ApiOperation(value = "회원가입", notes = "회원가입을 수행합니다.")
     public String signUp(@RequestBody SignupReqDTO req) {
         return memberService.join(req);
+    }
+
+    /**
+     * 아이디 중복체크 (회원가입 시)
+     */
+    @PostMapping("/userIdValidation")
+    @ApiOperation(value = "아이디 중복체크", notes = "회원가입시 아이디 중복체크를 수행합니다.")
+    public String userIdValidation(@RequestBody ValidationDTO req) {
+        return memberService.userIdValidation(req);
     }
 
     /**

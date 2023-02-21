@@ -43,6 +43,17 @@ public class MemberService {
     }
 
     /**
+     * 아이디 중복체크 (회원가입 시)
+     */
+    public String userIdValidation(ValidationDTO req) {
+        if (memberRepository.existsByUserId(req.getUserId())) {
+            return req.getUserId() + "는 이미 존재하는 아이디 입니다. 다른 아이디를 입력해주세요.";
+        } else {
+            return "회원가입이 가능한 아이디 입니다.";
+        }
+    }
+
+    /**
      * 로그인
      */
     @Transactional(readOnly = true)

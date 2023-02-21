@@ -9,10 +9,10 @@ import lombok.*;
 @Builder
 public class CardByBenefitResDTO {
 
-    private long id;
-    private String benefit;
+    private Long id;
     private String name;
     private String company;
     private String image;
     private CardType type;
+    private String benefit;
 }

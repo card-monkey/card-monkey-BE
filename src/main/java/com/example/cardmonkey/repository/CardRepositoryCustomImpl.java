@@ -4,6 +4,7 @@ import com.example.cardmonkey.entity.Card;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class CardRepositoryCustomImpl implements CardRepositoryCustom {
@@ -11,10 +12,21 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
     private final EntityManager em;
 
     @Override
+    public List<Card> findAllByBenefit(String benefitName) {
+        String sql = "select c from Card c where c.benefit.";
+        String postSql = " = :yes";
+        sql += benefitName;
+        sql += postSql;
+
+        return em.createQuery(sql, Card.class)
+                .setParameter("yes", "yes")
+                .getResultList();
+    }
+
+    @Override
     public Card recommendRandomCardByBenefit(String benefitName, int offset) {
         String sql = "select c from Card c where c.benefit.";
         String postSql = " = :yes";
-
         sql += benefitName;
         sql += postSql;
 

@@ -2,12 +2,11 @@ package com.example.cardmonkey.dto;
 
 import lombok.*;
 
-@Getter
-@ToString
-@Builder
-@AllArgsConstructor
+@Getter @Setter
 @NoArgsConstructor
-public class PasswordDTO {
+@AllArgsConstructor
+@Builder
+public class PasswordReqDTO {
 
     private String currentPassword; // 현재 비밀번호
     private String newPassword; // 새로운 비밀번호

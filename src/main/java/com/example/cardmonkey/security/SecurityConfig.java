@@ -29,7 +29,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_URLS = { //이 URL은 권한 검사 안 함
-            "/signup", "/login", "/logout"
+            "/signup", "/login", "/logout", "/userIdValidation"
     };
 
     private final JwtProvider jwtProvider;

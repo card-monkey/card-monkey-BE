@@ -19,5 +19,5 @@ public interface CardRepository extends JpaRepository<Card, Long>, CardRepositor
     List<Card> findAllByCompanyContains(String cardCompany);
 
     @Query("select c from Card c where c.id in :cards")
-    List<Card> findCardByIds(@Param("cards") Collection<String> cardIds);
+    List<Card> findCardByIds(@Param("cards") Collection<Long> cardIds);
 }

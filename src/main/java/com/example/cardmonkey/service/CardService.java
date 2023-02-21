@@ -1,7 +1,6 @@
 package com.example.cardmonkey.service;
 
 import com.example.cardmonkey.dto.CardByBenefitResDTO;
-import com.example.cardmonkey.dto.CardByFavorResDTO;
 import com.example.cardmonkey.dto.CardDetailResDTO;
 import com.example.cardmonkey.dto.CardResDTO;
 import com.example.cardmonkey.entity.Card;
@@ -17,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,30 +34,34 @@ public class CardService {
     /**
      * 몽키차트 TOP 5 카드 (찜)
      */
-    // TODO: 리팩토링
-    public List<CardByFavorResDTO> selectFavorByRank() {
-        List<Card> cardList = new ArrayList<>();
-        List<CardByFavorResDTO> cardByFavorResDTOList = new ArrayList<>();
-        List<Object[]> objects = favorRepository.selectFavorByRank();
-        if (objects.size() == 0 || objects == null) {
-            return null;
-        }
-        return getCardResponseDTOS(cardList, cardByFavorResDTOList, objects, cardRepository);
-    }
+    // // TODO: 리팩토링
+    // public List<CardByFavorResDTO> selectFavorByRank() {
+    //     List<Card> cardList = new ArrayList<>();
+    //     List<CardByFavorResDTO> cardByFavorResDTOList = new ArrayList<>();
+    //     List<Object[]> objects = favorRepository.selectFavorByRank();
+    //     if (objects.size() == 0 || objects == null) {
+    //         return null;
+    //     }
+    //     return getCardResponseDTOS(cardList, cardByFavorResDTOList, objects, cardRepository);
+    // }
+    // public List<CardByFavorResDTO> selectFavorByRank() {
+    //     List<Object[]> result = favorRepository.selectFavorByRank();
+    //     List<String> card
+    // }
 
     /**
      * 인기 TOP 5 카드정보를 받아 옴
      */
-    // TODO: 리팩토링
-    static List<CardByFavorResDTO> getCardResponseDTOS(List<Card> cardList, List<CardByFavorResDTO> cardByFavorResDTOList, List<Object[]> objects, CardRepository cardRepository) {
-        int cnt = 0;
-        for (Object[] obj : objects) {
-            cardList.add(cardRepository.findAllById(((BigInteger) obj[0]).longValue()));
-            cardByFavorResDTOList.add(cnt, new CardByFavorResDTO(cardList.get(cnt), ((BigInteger) obj[1]).intValue()));
-            cnt++;
-        }
-        return cardByFavorResDTOList;
-    }
+    // // TODO: 리팩토링
+    // static List<CardByFavorResDTO> getCardResponseDTOS(List<Card> cardList, List<CardByFavorResDTO> cardByFavorResDTOList, List<Object[]> objects, CardRepository cardRepository) {
+    //     int cnt = 0;
+    //     for (Object[] obj : objects) {
+    //         cardList.add(cardRepository.findAllById(((BigInteger) obj[0]).longValue()));
+    //         cardByFavorResDTOList.add(cnt, new CardByFavorResDTO(cardList.get(cnt), ((BigInteger) obj[1]).intValue()));
+    //         cnt++;
+    //     }
+    //     return cardByFavorResDTOList;
+    // }
 
     /**
      * 관심혜택 맞춤 카드

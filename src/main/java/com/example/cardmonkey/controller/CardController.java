@@ -144,9 +144,8 @@ public class CardController {
      */
     @GetMapping("/card/{cardId}/review")
     @ApiOperation(value = "리뷰 조회", notes = "각 카드의 리뷰를 조회합니다.")
-    public String selectReviewByCard(@PathVariable Long cardId) {
-        // TODO: 기능 구현
-        return null;
+    public ReviewResDTO selectReviewByCard(@PathVariable Long cardId) {
+        return cardService.selectReviewByCard(cardId);
     }
 
     /**
@@ -154,8 +153,12 @@ public class CardController {
      */
     @PostMapping("/card/{cardId}/review")
     @ApiOperation(value = "리뷰 선택", notes = "각 카드에 원하는 리뷰를 선택합니다.")
-    public String reviewCard(@PathVariable Long cardId) {
-        // TODO: 기능 구현
-        return null;
+    public String reviewCard(@PathVariable Long cardId,
+                             @RequestBody List<Long> commentIds,
+                             Authentication authentication) {
+        LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
+        String userId = loginReqDTO.getUserId();
+
+        return cardService.saveReview(userId, cardId, commentIds);
     }
 }

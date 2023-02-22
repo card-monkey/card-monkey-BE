@@ -1,14 +1,8 @@
 package com.example.cardmonkey.service;
 
 import com.example.cardmonkey.dto.*;
-import com.example.cardmonkey.entity.Card;
-import com.example.cardmonkey.entity.Favor;
-import com.example.cardmonkey.entity.Member;
-import com.example.cardmonkey.entity.Paid;
-import com.example.cardmonkey.repository.CardRepository;
-import com.example.cardmonkey.repository.FavorRepository;
-import com.example.cardmonkey.repository.MemberRepository;
-import com.example.cardmonkey.repository.PaidRepository;
+import com.example.cardmonkey.entity.*;
+import com.example.cardmonkey.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +23,8 @@ public class CardService {
     private final MemberRepository memberRepository;
     private final FavorRepository favorRepository;
     private final PaidRepository paidRepository;
+    private final ReviewRepository reviewRepository;
+    private final CommentRepository commentRepository;
 
     /**
      * 몽키차트 TOP 5 카드 (찜)
@@ -232,10 +228,56 @@ public class CardService {
     /**
      * 리뷰 조회
      */
+    public ReviewResDTO selectReviewByCard(Long cardId){
+        // 리뷰대상 카드정보 생성
+        Card findCard = cardRepository.findById(cardId).get();
 
-    /**
-     * 리뷰 선택
-     */
+        // 대상 카드의 리뷰정보 추출 & Count
+        ReviewResDTO res = new ReviewResDTO();
+        List<Comment> commentList = commentRepository.findAll();
+        res.SetComment(commentList);
+
+        // 대상 카드에 포함된 리뷰갯수 카운트
+        for(Review review : reviewRepository.findAllByCard(findCard)){
+            res.CountReview(
+                    review.getReviewComments().stream()
+                            .map(ReviewComment::getComment)
+                            .map(Comment::getMessage)
+                            .collect(Collectors.toList())
+            );
+        }
+        return res;
+    }
+
+    public String saveReview(String memberId, Long cardId, List<Long> commentIds){
+        // 리뷰 작성자 & 리뷰 카드정보 생성
+        Member findMember = memberRepository.findByUserId(memberId).get();
+        Card findCard = cardRepository.findById(cardId).get();
+
+        // 선택 리뷰정보 생성
+        List<Comment> comments = new ArrayList<>();
+        for(Long commentId : commentIds){
+            comments.add(
+                    commentRepository.findById(commentId).orElseThrow()
+            );
+        }
+
+        // 기존 리뷰정보 확인
+        if(!checkExistsReview(findMember, findCard)){
+
+            // 리뷰가 존재하지 않는경우, 새로운 리뷰작성
+            ReviewReqDTO req = new ReviewReqDTO();
+            reviewRepository.save(
+                    req.toEntity(findMember, findCard, comments)
+            );
+            return "리뷰선택 완료!";
+        }else{
+
+            // 리뷰가 존재하는 경우, 다시 누른것으로 판단 => 리뷰삭제 진행
+            reviewRepository.deleteByMemberAndCard(findMember, findCard);
+            return "리뷰삭제 완료!";
+        }
+    }
 
     private boolean checkExistsPaid(Long memberId, Long cardId) {
         return paidRepository.existsByMemberIdAndCardId(memberId, cardId);
@@ -243,6 +285,10 @@ public class CardService {
 
     private boolean checkExistsFavor(Long memberId, Long cardId) {
         return favorRepository.existsByMemberIdAndCardId(memberId, cardId);
+    }
+
+    private boolean checkExistsReview(Member member, Card card){
+        return reviewRepository.existsByMemberAndCard(member, card);
     }
 
     // public List<CardByFavorResDTO> selectFavorByRank() {

@@ -16,5 +16,8 @@ public class CardDetailResDTO {
     private String company;
     private String image;
     private CardType type;
+    private int annualFee;
+    private int lastMonthPaid;
+    private String apply;
     private List<String> benefit;
 }

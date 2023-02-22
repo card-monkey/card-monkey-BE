@@ -144,27 +144,4 @@ public class CardController {
         String userId = loginReqDTO.getUserId();
         return cardService.saveFavor(userId, cardId);
     }
-
-    /**
-     * 리뷰 조회
-     */
-    @GetMapping("/card/review/{cardId}")
-    @ApiOperation(value = "리뷰 조회", notes = "각 카드의 리뷰를 조회합니다.")
-    public ReviewResDTO selectReviewByCard(@PathVariable Long cardId) {
-        return cardService.selectReviewByCard(cardId);
-    }
-
-    /**
-     * 리뷰 선택
-     */
-    @PostMapping("/card/review/{cardId}")
-    @ApiOperation(value = "리뷰 선택", notes = "각 카드에 원하는 리뷰를 선택합니다.")
-    public String reviewCard(Authentication authentication,
-                             @PathVariable Long cardId,
-                             @RequestBody List<Long> commentIds) {
-        LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
-        String userId = loginReqDTO.getUserId();
-
-        return cardService.saveReview(userId, cardId, commentIds);
-    }
 }

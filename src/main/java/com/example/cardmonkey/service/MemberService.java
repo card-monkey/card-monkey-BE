@@ -49,9 +49,9 @@ public class MemberService {
     @Transactional(readOnly = true)
     public String userIdValidation(ValidationDTO req) {
         if (memberRepository.existsByUserId(req.getUserId())) {
-            return req.getUserId() + "는 이미 존재하는 아이디 입니다. 다른 아이디를 입력해주세요.";
+            return "1";
         } else {
-            return "회원가입이 가능한 아이디 입니다.";
+            return null;
         }
     }
 

@@ -1,4 +1,4 @@
-package com.example.cardmonkey.security;
+package com.example.cardmonkey.config;
 
 import com.example.cardmonkey.jwt.JwtFilter;
 import com.example.cardmonkey.jwt.JwtProvider;

@@ -32,9 +32,11 @@ public class CardController {
     /**
      * 관심혜택 맞춤 카드
      */
-    @GetMapping("/card/benefit/{userId}")
+    @GetMapping("/card/recommend")
     @ApiOperation(value = "관심 혜택 맞춤 카드", notes = "회원가입 시 선택한 3가지의 혜택으로 카드를 추천합니다.")
-    public List<CardByBenefitResDTO> CardByChooseBenefitList(@PathVariable String userId) {
+    public List<CardByBenefitResDTO> CardByChooseBenefitList(Authentication authentication) {
+        LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
+        String userId = loginReqDTO.getUserId();
         return cardService.findCardByChooseBenefit(userId);
     }
 
@@ -91,16 +93,29 @@ public class CardController {
     /**
      * 카드 신청 내역
      */
-    @GetMapping("/paid/{userId}")
+    @GetMapping("/info/apply")
     @ApiOperation(value = "신청한 카드 내역", notes = "신청한 카드 내역을 조회합니다.")
-    public List<CardResDTO> selectPaidCard(@PathVariable String userId) {
+    public List<CardResDTO> selectPaidCard(Authentication authentication) {
+        LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
+        String userId = loginReqDTO.getUserId();
         return cardService.paidList(userId);
+    }
+
+    /**
+     * 나의 관심(찜) 카드 내역
+     */
+    @GetMapping("/info/favor")
+    @ApiOperation(value = "찜한 카드 내역", notes = "내가 찜한 카드들의 내역을 조회합니다.")
+    public List<CardResDTO> selectCardByFavor(Authentication authentication) {
+        LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
+        String userId = loginReqDTO.getUserId();
+        return cardService.selectCardByFavor(userId);
     }
 
     /**
      * 카드 신청
      */
-    @PostMapping("/card/{cardId}")
+    @PostMapping("/card/apply/{cardId}")
     @ApiOperation(value = "카드 신청", notes = "카드를 신청합니다.")
     public String payCard(@PathVariable Long cardId, Authentication authentication) {
         LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
@@ -111,7 +126,7 @@ public class CardController {
     /**
      * 카드 신청 취소
      */
-    @DeleteMapping("/paid/{cardId}")
+    @DeleteMapping("/card/apply/{cardId}")
     @ApiOperation(value = "신청한 카드 취소", notes = "신청한 카드를 취소합니다.")
     public String deletePaidCard(@PathVariable Long cardId, Authentication authentication) {
         LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
@@ -120,20 +135,11 @@ public class CardController {
     }
 
     /**
-     * 나의 관심(찜) 카드 내역
-     */
-    @GetMapping("/card/favor/{userId}")
-    @ApiOperation(value = "찜한 카드 내역", notes = "내가 찜한 카드들의 내역을 조회합니다.")
-    public List<CardResDTO> selectCardByFavor(@PathVariable String userId) {
-        return cardService.selectCardByFavor(userId);
-    }
-
-    /**
      * 찜하기 or 찜하기 취소
      */
-    @PostMapping("/card/{cardId}/favor")
+    @PostMapping("/card/favor/{cardId}")
     @ApiOperation(value = "찜 기능", notes = "유저가 카드를 찜 하거나 찜 취소를 할 수 있습니다.")
-    public String favorCard(@PathVariable Long cardId, Authentication authentication) {
+    public String favorCard(Authentication authentication, @PathVariable Long cardId) {
         LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
         String userId = loginReqDTO.getUserId();
         return cardService.saveFavor(userId, cardId);
@@ -142,7 +148,7 @@ public class CardController {
     /**
      * 리뷰 조회
      */
-    @GetMapping("/card/{cardId}/review")
+    @GetMapping("/card/review/{cardId}")
     @ApiOperation(value = "리뷰 조회", notes = "각 카드의 리뷰를 조회합니다.")
     public ReviewResDTO selectReviewByCard(@PathVariable Long cardId) {
         return cardService.selectReviewByCard(cardId);
@@ -151,11 +157,11 @@ public class CardController {
     /**
      * 리뷰 선택
      */
-    @PostMapping("/card/{cardId}/review")
+    @PostMapping("/card/review/{cardId}")
     @ApiOperation(value = "리뷰 선택", notes = "각 카드에 원하는 리뷰를 선택합니다.")
-    public String reviewCard(@PathVariable Long cardId,
-                             @RequestBody List<Long> commentIds,
-                             Authentication authentication) {
+    public String reviewCard(Authentication authentication,
+                             @PathVariable Long cardId,
+                             @RequestBody List<Long> commentIds) {
         LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
         String userId = loginReqDTO.getUserId();
 

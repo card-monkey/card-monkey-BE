@@ -1,6 +1,8 @@
 package com.example.cardmonkey.entity;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -16,6 +18,7 @@ public class Paid {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -25,7 +28,6 @@ public class Paid {
 
     public void setPaidMember(Member member) {
         this.member = member;
-        // member.getPaids().add(this);
     }
 
     public void setPaidCard(Card card) {

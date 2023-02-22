@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CardRepositoryCustom {
 
-    List<Card> findAllByBenefit(String benefitName);
+    List<Card> findAllByBenefit(String benefitName, int offset, int limit);
 
     Card recommendRandomCardByBenefit(String benefitName, int offset);
 

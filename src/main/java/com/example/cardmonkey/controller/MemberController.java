@@ -3,12 +3,14 @@ package com.example.cardmonkey.controller;
 import com.example.cardmonkey.dto.ChangeBenefitReqDTO;
 import com.example.cardmonkey.dto.PasswordReqDTO;
 import com.example.cardmonkey.service.MemberService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@Api(tags = {"회원 서비스"}, description = "회원 서비스를 담당합니다.")
 public class MemberController {
 
     private final MemberService memberService;

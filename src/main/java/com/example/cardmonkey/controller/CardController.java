@@ -5,6 +5,9 @@ import com.example.cardmonkey.service.CardService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +23,6 @@ public class CardController {
     /**
      * 몽키차트 TOP 5 카드 (찜)
      */
-    // TODO: 리팩토링
     @GetMapping("/card/rank")
     @ApiOperation(value = "몽키차트 TOP 5 카드", notes = "찜 횟수가 많은 TOP 5 카드를 조회합니다.")
     public List<CardByFavorResDTO> selectTopThreeCard() {
@@ -41,8 +43,9 @@ public class CardController {
      */
     @GetMapping("/card/name")
     @ApiOperation(value = "카드명 검색", notes = "카드명으로 검색합니다.")
-    public List<CardResDTO> searchCardByName(@RequestParam(name = "search") String name) {
-        return cardService.searchCardByName(name);
+    public Page<CardResDTO> searchCardByName(@RequestParam(name = "search") String name,
+                                             @PageableDefault(size = 100) Pageable pageable) {
+        return cardService.searchCardByName(name, pageable);
     }
 
     /**
@@ -50,8 +53,9 @@ public class CardController {
      */
     @GetMapping("/card/company")
     @ApiOperation(value = "카드사 검색", notes = "카드사로 검색합니다.")
-    public List<CardResDTO> searchCardByCompany(@RequestParam(name = "search") String company) {
-        return cardService.searchCardByCompany(company);
+    public Page<CardResDTO> searchCardByCompany(@RequestParam(name = "search") String company,
+                                                @PageableDefault(size = 100) Pageable pageable) {
+        return cardService.searchCardByCompany(company, pageable);
     }
 
     /**
@@ -59,8 +63,11 @@ public class CardController {
      */
     @GetMapping("/card/benefit")
     @ApiOperation(value = "카드 혜택 검색", notes = "카드 혜택으로 검색합니다.")
-    public List<CardResDTO> searchCardByBenefit(@RequestParam(name = "search") String benefit) {
-        return cardService.searchCardByBenefit(benefit);
+    public CardCountResDTO searchCardByBenefit(@RequestParam(name = "search") String benefit,
+                                               @RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "0") int offset,
+                                               @RequestParam(defaultValue = "100") int limit) {
+        return cardService.searchCardByBenefit(benefit, page, offset, limit);
     }
 
     /**
@@ -68,8 +75,8 @@ public class CardController {
      */
     @GetMapping("/card")
     @ApiOperation(value = "전체 카드 조회", notes = "전체 카드를 조회합니다.")
-    public List<CardResDTO> selectAllCard() {
-        return cardService.selectAllCard();
+    public Page<CardResDTO> selectAllCard(@PageableDefault(size = 100) Pageable pageable) {
+        return cardService.selectAllCard(pageable);
     }
 
     /**

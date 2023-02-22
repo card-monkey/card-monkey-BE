@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface FavorRepository extends JpaRepository<Favor, Long> {
 
-    @Query(value = "select f from Favor f join fetch f.card where f.member.id = :memberId")
+    @Query("select f from Favor f join fetch f.card where f.member.id = :memberId")
     List<Favor> findAllByMemberId(@Param("memberId") Long memberId);
 
     boolean existsByMemberIdAndCardId(Long memberId, Long cardId);

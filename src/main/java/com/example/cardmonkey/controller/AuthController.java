@@ -55,7 +55,7 @@ public class AuthController {
      */
     @PostMapping("/logout")
     @ApiOperation(value = "로그아웃", notes = "로그아웃을 수행합니다.")
-    public String logout(@RequestHeader(name="Authorization") String header) {
+    public String signOut(@RequestHeader(name="Authorization") String header) {
         tokenRepository.save(Token.builder().token(header).build());
         return "로그아웃 완료";
     }

@@ -39,12 +39,14 @@ public class MemberService {
         Member member = req.toEntity(req.getBenefit());
 
         memberRepository.save(member);
+
         return "회원가입 완료";
     }
 
     /**
      * 아이디 중복체크 (회원가입 시)
      */
+    @Transactional(readOnly = true)
     public String userIdValidation(ValidationDTO req) {
         if (memberRepository.existsByUserId(req.getUserId())) {
             return req.getUserId() + "는 이미 존재하는 아이디 입니다. 다른 아이디를 입력해주세요.";
@@ -62,7 +64,8 @@ public class MemberService {
             return new LoginResDTO("아이디와 비밀번호 모두 입력해주세요");
         }
 
-        Member findMember = memberRepository.findByUserId(req.getUserId()).get();
+        Member findMember = memberRepository.findByUserId(req.getUserId()).orElseThrow(
+                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
         if (!checkPassword(req.getPassword(), findMember.getPassword())) {
             return new LoginResDTO("아이디 또는 비밀번호가 일치하지 않습니다.");
@@ -89,7 +92,8 @@ public class MemberService {
             return "입력하신 두 비밀번호가 동일합니다.";
         }
 
-        Member findMember = memberRepository.findByUserId(userId).get();
+        Member findMember = memberRepository.findByUserId(userId).orElseThrow(
+                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
         if (!checkPassword(req.getCurrentPassword(), findMember.getPassword())) {
             return "현재 비밀번호가 일치하지 않습니다.";
         } else {
@@ -102,9 +106,11 @@ public class MemberService {
      * 혜택 변경
      */
     public String changeBenefit(String userId, ChangeBenefitReqDTO req) {
-        Member findMember = memberRepository.findByUserId(userId).get();
+        Member findMember = memberRepository.findByUserId(userId).orElseThrow(
+                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
         findMember.updateBenefit(new Benefit(req.getBenefit()));
+
         return "혜택변경 완료";
     }
 

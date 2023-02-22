@@ -28,7 +28,6 @@ public class Favor {
 
     public void setFavorMember(Member member) {
         this.member = member;
-        // member.getFavors().add(this);
     }
 
     public void setFavorCard(Card card) {

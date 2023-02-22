@@ -1,23 +1,22 @@
 package com.example.cardmonkey.repository;
 
 import com.example.cardmonkey.entity.Card;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 public interface CardRepository extends JpaRepository<Card, Long>, CardRepositoryCustom {
-    Optional<Card> findById(Long card_id);
 
-    List<Card> findAllByNameContains(String cardName);
+    Optional<Card> findById(Long cardId);
 
-    Card findAllById(Long id);
+    Page<Card> findAllByNameContains(String cardName, Pageable pageable);
 
-    List<Card> findAllByCompanyContains(String cardCompany);
+    Page<Card> findAllByCompanyContains(String cardCompany, Pageable pageable);
 
-    @Query("select c from Card c where c.id in :cards")
-    List<Card> findCardByIds(@Param("cards") Collection<Long> cardIds);
+    Page<Card> findAll(Pageable pageable);
+
+    // @Query("select c from Card c where c.id in :cards")
+    // List<Card> findCardByIds(@Param("cards") Collection<Long> cardIds);
 }

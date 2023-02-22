@@ -12,7 +12,7 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
     private final EntityManager em;
 
     @Override
-    public List<Card> findAllByBenefit(String benefitName) {
+    public List<Card> findAllByBenefit(String benefitName, int offset, int limit) {
         String sql = "select c from Card c where c.benefit.";
         String postSql = " = :yes";
         sql += benefitName;
@@ -20,6 +20,8 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 
         return em.createQuery(sql, Card.class)
                 .setParameter("yes", "yes")
+                .setFirstResult(offset)
+                .setMaxResults(limit)
                 .getResultList();
     }
 

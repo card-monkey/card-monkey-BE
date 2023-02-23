@@ -14,8 +14,8 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
     @Override
     public List<Card> findAllByBenefit(String benefitName, int offset, int limit) {
         String sql = "select c from Card c where c.benefit.";
-        String postSql = " = :yes";
         sql += benefitName;
+        String postSql = " = :yes";
         sql += postSql;
 
         return em.createQuery(sql, Card.class)
@@ -26,10 +26,10 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
     }
 
     @Override
-    public Card recommendRandomCardByBenefit(String benefitName, int offset) {
+    public Card findRandomCardByBenefit(String benefitName, int offset) {
         String sql = "select c from Card c where c.benefit.";
-        String postSql = " = :yes";
         sql += benefitName;
+        String postSql = " = :yes";
         sql += postSql;
 
         return em.createQuery(sql, Card.class)
@@ -42,8 +42,8 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
     @Override
     public long countByBenefit(String benefitName) {
         String sql = "select count(c) from Card c where c.benefit.";
-        String postSql = " = :yes";
         sql += benefitName;
+        String postSql = " = :yes";
         sql += postSql;
 
         return em.createQuery(sql, Long.class)

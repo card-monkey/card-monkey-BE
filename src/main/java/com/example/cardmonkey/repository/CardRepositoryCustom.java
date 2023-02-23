@@ -8,7 +8,7 @@ public interface CardRepositoryCustom {
 
     List<Card> findAllByBenefit(String benefitName, int offset, int limit);
 
-    Card recommendRandomCardByBenefit(String benefitName, int offset);
+    Card findRandomCardByBenefit(String benefitName, int offset);
 
     long countByBenefit(String benefitName);
 }

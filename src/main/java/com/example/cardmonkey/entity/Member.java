@@ -28,12 +28,6 @@ public class Member {
 
     @Embedded
     private Benefit benefit;
-    //
-    // @OneToMany(mappedBy = "member")
-    // private List<Favor> favors = new ArrayList<>();
-    //
-    // @OneToMany(mappedBy = "member")
-    // private List<Paid> paids = new ArrayList<>();
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;

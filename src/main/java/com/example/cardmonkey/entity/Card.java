@@ -3,8 +3,6 @@ package com.example.cardmonkey.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -34,7 +32,4 @@ public class Card {
 
     @Embedded
     private Benefit benefit;
-
-    @OneToMany(mappedBy = "card")
-    private List<Review> reviews = new ArrayList<>();
 }

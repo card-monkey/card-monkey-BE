@@ -1,7 +1,7 @@
 package com.example.cardmonkey.controller;
 
+import com.example.cardmonkey.dto.AuthDTO;
 import com.example.cardmonkey.dto.ChangeBenefitReqDTO;
-import com.example.cardmonkey.dto.LoginReqDTO;
 import com.example.cardmonkey.dto.PasswordReqDTO;
 import com.example.cardmonkey.service.MemberService;
 import io.swagger.annotations.Api;
@@ -26,8 +26,14 @@ public class MemberController {
     @PatchMapping("/info/changePassword")
     @ApiOperation(value = "비밀번호 변경", notes = "비밀번호를 확인 후 변경합니다.")
     public String changePassword(Authentication authentication, @RequestBody PasswordReqDTO req) {
-        LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
-        String userId = loginReqDTO.getUserId();
+        if (req.getCurrentPassword() == null || req.getNewPassword() == null) {
+            return "모든 값을 입력해주세요";
+        }
+        if (req.getCurrentPassword().equals(req.getNewPassword())) {
+            return "입력하신 두 비밀번호가 동일합니다.";
+        }
+        AuthDTO authDTO = (AuthDTO) authentication.getPrincipal();
+        String userId = authDTO.getUserId();
         return memberService.updatePassword(userId, req);
     }
 
@@ -37,8 +43,8 @@ public class MemberController {
     @PatchMapping("/info/changeBenefit")
     @ApiOperation(value = "혜택 변경", notes = "회원가입시 선택했던 3가지의 혜택을 수정합니다.")
     public String changeBenefit(Authentication authentication, @RequestBody ChangeBenefitReqDTO req) {
-        LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
-        String userId = loginReqDTO.getUserId();
+        AuthDTO authDTO = (AuthDTO) authentication.getPrincipal();
+        String userId = authDTO.getUserId();
         return memberService.changeBenefit(userId, req);
     }
 
@@ -48,8 +54,8 @@ public class MemberController {
     @DeleteMapping("/info/deleteAccount")
     @ApiOperation(value = "회원 탈퇴", notes = "회원을 탈퇴합니다.")
     public String deleteAccount(Authentication authentication) {
-        LoginReqDTO loginReqDTO = (LoginReqDTO) authentication.getPrincipal();
-        String userId = loginReqDTO.getUserId();
+        AuthDTO authDTO = (AuthDTO) authentication.getPrincipal();
+        String userId = authDTO.getUserId();
         return memberService.deleteAccount(userId);
     }
 }

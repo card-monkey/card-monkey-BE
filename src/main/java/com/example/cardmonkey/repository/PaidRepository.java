@@ -4,11 +4,9 @@ import com.example.cardmonkey.entity.Paid;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface PaidRepository extends JpaRepository<Paid, Long> {
 
     @Query(value = "select p from Paid p join fetch p.card where p.member.id = :memberId")

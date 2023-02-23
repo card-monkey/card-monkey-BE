@@ -16,7 +16,4 @@ public interface CardRepository extends JpaRepository<Card, Long>, CardRepositor
     Page<Card> findAllByCompanyContains(String cardCompany, Pageable pageable);
 
     Page<Card> findAll(Pageable pageable);
-
-    // @Query("select c from Card c where c.id in :cards")
-    // List<Card> findCardByIds(@Param("cards") Collection<Long> cardIds);
 }

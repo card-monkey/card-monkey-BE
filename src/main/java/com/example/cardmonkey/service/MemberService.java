@@ -3,10 +3,10 @@ package com.example.cardmonkey.service;
 import com.example.cardmonkey.dto.*;
 import com.example.cardmonkey.entity.Benefit;
 import com.example.cardmonkey.entity.Member;
+import com.example.cardmonkey.exception.NoSuchMemberException;
 import com.example.cardmonkey.jwt.JwtProvider;
 import com.example.cardmonkey.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -25,9 +24,6 @@ public class MemberService {
      * 회원가입
      */
     public String join(SignupReqDTO req) {
-        if (req.getUserId() == null || req.getPassword() == null || req.getName() == null) {
-            return "모든 값을 입력해주세요";
-        }
         if (memberRepository.existsByUserId(req.getUserId())) {
             return req.getUserId() + "는 이미 존재하는 아이디 입니다.";
         }
@@ -60,12 +56,8 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public LoginResDTO login(LoginReqDTO req) {
-        if (req.getUserId() == null || req.getPassword() == null) {
-            return new LoginResDTO("아이디와 비밀번호 모두 입력해주세요");
-        }
-
         Member findMember = memberRepository.findByUserId(req.getUserId()).orElseThrow(
-                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                NoSuchMemberException::new);
 
         if (!checkPassword(req.getPassword(), findMember.getPassword())) {
             return new LoginResDTO("아이디 또는 비밀번호가 일치하지 않습니다.");
@@ -85,21 +77,14 @@ public class MemberService {
      * 비밀번호 변경
      */
     public String updatePassword(String userId, PasswordReqDTO req) {
-        if (req.getCurrentPassword() == null || req.getNewPassword() == null) {
-            return "모든 값을 입력해주세요";
-        }
-        if (req.getCurrentPassword().equals(req.getNewPassword())) {
-            return "입력하신 두 비밀번호가 동일합니다.";
-        }
-
         Member findMember = memberRepository.findByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                NoSuchMemberException::new);
+
         if (!checkPassword(req.getCurrentPassword(), findMember.getPassword())) {
             return "현재 비밀번호가 일치하지 않습니다.";
-        } else {
-            findMember.updatePassword(encodingPassword(req.getNewPassword()));
-            return "비밀번호가 변경 되었습니다.";
         }
+        findMember.updatePassword(encodingPassword(req.getNewPassword()));
+        return "비밀번호가 변경 되었습니다.";
     }
 
     /**
@@ -107,7 +92,7 @@ public class MemberService {
      */
     public String changeBenefit(String userId, ChangeBenefitReqDTO req) {
         Member findMember = memberRepository.findByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                NoSuchMemberException::new);
 
         findMember.updateBenefit(new Benefit(req.getBenefit()));
 

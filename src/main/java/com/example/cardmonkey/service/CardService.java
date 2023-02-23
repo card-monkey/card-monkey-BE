@@ -5,6 +5,8 @@ import com.example.cardmonkey.entity.Card;
 import com.example.cardmonkey.entity.Favor;
 import com.example.cardmonkey.entity.Member;
 import com.example.cardmonkey.entity.Paid;
+import com.example.cardmonkey.exception.NoSuchCardException;
+import com.example.cardmonkey.exception.NoSuchMemberException;
 import com.example.cardmonkey.repository.CardRepository;
 import com.example.cardmonkey.repository.FavorRepository;
 import com.example.cardmonkey.repository.MemberRepository;
@@ -33,20 +35,19 @@ public class CardService {
     /**
      * 몽키차트 TOP 5 카드 (찜)
      */
-    public List<CardByFavorResDTO> selectFavorByRank() {
+    public List<CardByFavorResDTO> selectCardByFavorRank() {
         List<Card> cardList = new ArrayList<>();
         List<CardByFavorResDTO> cardByFavorResDTOList = new ArrayList<>();
-        List<Object[]> objects = favorRepository.selectFavorByRank();
-        if (objects.size() == 0 || objects == null) {
-            return null;
-        }
-        return getCardResponseDTOS(cardList, cardByFavorResDTOList, objects, cardRepository);
+        List<Object[]> objects = favorRepository.findByTop5FavorRank();
+        if (objects.size() == 0) return null;
+
+        return getCardByFavorResDtos(cardList, cardByFavorResDTOList, objects, cardRepository);
     }
 
     /**
      * 인기 TOP 5 카드정보를 받아 옴
      */
-    static List<CardByFavorResDTO> getCardResponseDTOS(List<Card> cardList, List<CardByFavorResDTO> cardByFavorResDTOList, List<Object[]> objects, CardRepository cardRepository) {
+    static List<CardByFavorResDTO> getCardByFavorResDtos(List<Card> cardList, List<CardByFavorResDTO> cardByFavorResDTOList, List<Object[]> objects, CardRepository cardRepository) {
         int cnt = 0;
         for (Object[] obj : objects) {
             cardList.add(cardRepository.findById(((BigInteger) obj[0]).longValue()).get());
@@ -59,9 +60,9 @@ public class CardService {
     /**
      * 관심혜택 맞춤 카드
      */
-    public List<CardByBenefitResDTO> findCardByChooseBenefit(String userId) {
+    public List<CardByBenefitResDTO> selectCardByChooseBenefit(String userId) {
         Member findMember = memberRepository.findByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                NoSuchMemberException::new);
 
         List<String> benefits = findMember.getBenefit().makeBenefitList();
 
@@ -70,7 +71,7 @@ public class CardService {
             long qty = cardRepository.countByBenefit(benefit);
             int index = (int) (Math.random() * qty);
 
-            Card findCard = cardRepository.recommendRandomCardByBenefit(benefit, index);
+            Card findCard = cardRepository.findRandomCardByBenefit(benefit, index);
 
             CardByBenefitResDTO dto = CardByBenefitResDTO.builder()
                     .id(findCard.getId())
@@ -89,7 +90,7 @@ public class CardService {
     /**
      * 카드 검색 (카드명)
      */
-    public Page<CardResDTO> searchCardByName(String name, Pageable pageable){
+    public Page<CardResDTO> selectCardByName(String name, Pageable pageable){
         return cardRepository.findAllByNameContains(name, pageable)
                 .map(CardResDTO::new);
     }
@@ -97,7 +98,7 @@ public class CardService {
     /**
      * 카드 검색 (카드사)
      */
-    public Page<CardResDTO> searchCardByCompany(String company, Pageable pageable){
+    public Page<CardResDTO> selectCardByCompany(String company, Pageable pageable){
         return cardRepository.findAllByCompanyContains(company, pageable)
                 .map(CardResDTO::new);
     }
@@ -105,7 +106,7 @@ public class CardService {
     /**
      * 카드 검색 (혜택)
      */
-    public CardCountResDTO searchCardByBenefit(String benefit,int page, int offset, int limit) {;
+    public CardCountResDTO selectCardByBenefit(String benefit, int page, int offset, int limit) {;
         offset = limit * page;
         long count = cardRepository.countByBenefit(benefit);
 
@@ -131,9 +132,9 @@ public class CardService {
     /**
      * 카드 상세정보 조회
      */
-    public CardDetailResDTO selectCardById(Long cardId) {
+    public CardDetailResDTO selectCardDetail(Long cardId) {
         Card findCard = cardRepository.findById(cardId).orElseThrow(
-                () -> new IllegalArgumentException("해당 카드 정보를 찾을 수 없습니다."));
+                NoSuchCardException::new);
         List<String> benefits = findCard.getBenefit().makeBenefitList();
 
         return CardDetailResDTO.builder()
@@ -152,9 +153,9 @@ public class CardService {
     /**
      * 카드 신청 내역
      */
-    public List<CardResDTO> paidList(String userId) {
+    public List<CardResDTO> selectPaidList(String userId) {
         Member findMember = memberRepository.findByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));;
+                NoSuchMemberException::new);
 
         return paidRepository.findAllByMemberId(findMember.getId())
                 .stream()
@@ -168,17 +169,16 @@ public class CardService {
     @Transactional
     public String savePaid(String userId, Long cardId) {
         Member findMember = memberRepository.findByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));;
+                NoSuchMemberException::new);
         Card findCard = cardRepository.findById(cardId).orElseThrow(
-                () -> new IllegalArgumentException("해당 카드 정보를 찾을 수 없습니다."));
+                NoSuchCardException::new);
 
-        if (!checkExistsPaid(findMember.getId(), findCard.getId())) {
-            Paid paid = Paid.createPaid(findMember, findCard);
-            paidRepository.save(paid);
-            return "카드신청 완료";
-        } else {
+        if (checkExistsPaid(findMember.getId(), findCard.getId())) {
             return "이미 신청하신 카드입니다.";
         }
+        Paid paid = Paid.createPaid(findMember, findCard);
+        paidRepository.save(paid);
+        return "카드신청 완료";
     }
 
     /**
@@ -187,24 +187,23 @@ public class CardService {
     @Transactional
     public String cancelPaid(String userId, Long cardId) {
         Member findMember = memberRepository.findByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));;
+                NoSuchMemberException::new);
         Card findCard = cardRepository.findById(cardId).orElseThrow(
-                () -> new IllegalArgumentException("해당 카드 정보를 찾을 수 없습니다."));
+                NoSuchCardException::new);
 
-        if (checkExistsPaid(findMember.getId(), findCard.getId())) {
-            paidRepository.deleteByMemberIdAndCardId(findMember.getId(), findCard.getId());
-            return "카드신청 취소 완료";
-        } else {
+        if (!checkExistsPaid(findMember.getId(), findCard.getId())) {
             return "신청내역이 존재하지 않습니다.";
         }
+        paidRepository.deleteByMemberIdAndCardId(findMember.getId(), findCard.getId());
+        return "카드신청 취소 완료";
     }
 
     /**
      * 나의 관심(찜) 카드 내역
      */
-    public List<CardResDTO> selectCardByFavor(String userId) {
+    public List<CardResDTO> selectFavorList(String userId) {
         Member findMember = memberRepository.findByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));;
+                NoSuchMemberException::new);
 
         return favorRepository.findAllByMemberId(findMember.getId())
                 .stream()
@@ -216,20 +215,19 @@ public class CardService {
      * 찜하기 or 찜하기 취소
      */
     @Transactional
-    public String saveFavor(String userId, Long cardId) {
+    public String saveAndCancelFavor(String userId, Long cardId) {
         Member findMember = memberRepository.findByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));;
+                NoSuchMemberException::new);
         Card findCard = cardRepository.findById(cardId).orElseThrow(
-                () -> new IllegalArgumentException("해당 카드 정보를 찾을 수 없습니다."));
+                NoSuchCardException::new);
 
         if (!checkExistsFavor(findMember.getId(), findCard.getId())) {
             Favor favor = Favor.createFavor(findMember, findCard);
             favorRepository.save(favor);
             return "찜하기 완료";
-        } else {
-            favorRepository.deleteByMemberIdAndCardId(findMember.getId(), findCard.getId());
-            return "찜하기 취소 완료";
         }
+        favorRepository.deleteByMemberIdAndCardId(findMember.getId(), findCard.getId());
+        return "찜하기 취소 완료";
     }
 
     private boolean checkExistsPaid(Long memberId, Long cardId) {
@@ -239,37 +237,4 @@ public class CardService {
     private boolean checkExistsFavor(Long memberId, Long cardId) {
         return favorRepository.existsByMemberIdAndCardId(memberId, cardId);
     }
-
-    // public List<CardByFavorResDTO> selectFavorByRank() {
-    //     List<CardQueryDTO> rankCards = favorRepository.selectFavorByRank();
-    //     List<Long> cardIds = new ArrayList<>();
-    //     List<Long> favor = new ArrayList<>();
-    //     for (CardQueryDTO rankCard : rankCards) {
-    //         cardIds.add(rankCard.getCardId());
-    //         favor.add(rankCard.getCount());
-    //         System.out.println(rankCard.getCardId());
-    //         System.out.println(rankCard.getCount());
-    //     }
-    //
-    //     List<CardByFavorResDTO> result = new ArrayList<>();
-    //     List<Card> findCards = cardRepository.findCardByIds(cardIds);
-    //
-    //     int count = 0;
-    //     for (Card findCard : findCards) {
-    //         CardByFavorResDTO dto = CardByFavorResDTO.builder()
-    //                 .id(findCard.getId())
-    //                 .name(findCard.getName())
-    //                 .company(findCard.getCompany())
-    //                 .image(findCard.getImageURL())
-    //                 .type(findCard.getCardType())
-    //                 .favor(favor.get(count))
-    //                 .build();
-    //
-    //         result.add(dto);
-    //         count++;
-    //     }
-    //     Collections.sort(result, (o1,o2) -> Math.toIntExact(o1.getFavor() - o2.getFavor()));
-    //
-    //     return result;
-    // }
 }

@@ -21,13 +21,5 @@ public interface FavorRepository extends JpaRepository<Favor, Long> {
                 "FROM favor f " +
                 "GROUP BY f.card_id " +
                 "ORDER BY CNT DESC LIMIT 5", nativeQuery = true)
-    List<Object[]> selectFavorByRank();
-
-    // @Query(value =
-    //         "SELECT card_id as cardId, count(*) as count " +
-    //         "FROM favor " +
-    //         "GROUP BY card_id " +
-    //         "ORDER BY COUNT(*) DESC LIMIT 5"
-    //         , nativeQuery = true)
-    // List<CardQueryDTO> selectFavorByRank();
+    List<Object[]> findByTop5FavorRank();
 }

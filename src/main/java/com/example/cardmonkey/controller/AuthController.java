@@ -29,6 +29,9 @@ public class AuthController {
     @PostMapping("/signup")
     @ApiOperation(value = "회원가입", notes = "회원가입을 수행합니다.")
     public String signUp(@RequestBody SignupReqDTO req) {
+        if (req.getUserId() == null || req.getPassword() == null || req.getName() == null) {
+            return "모든 값을 입력해주세요";
+        }
         return memberService.join(req);
     }
 
@@ -38,6 +41,9 @@ public class AuthController {
     @PostMapping("/userIdValidation")
     @ApiOperation(value = "아이디 중복체크", notes = "회원가입시 아이디 중복체크를 수행합니다.")
     public String userIdValidation(@RequestBody ValidationDTO req) {
+        if (req.getUserId() == null) {
+            return "아이디를 입력해주세요";
+        }
         return memberService.userIdValidation(req);
     }
 
@@ -47,6 +53,9 @@ public class AuthController {
     @PostMapping("/login")
     @ApiOperation(value = "로그인", notes = "로그인을 수행합니다.")
     public LoginResDTO signIn(@RequestBody LoginReqDTO req) {
+        if (req.getUserId() == null || req.getPassword() == null) {
+            return new LoginResDTO("아이디와 비밀번호 모두 입력해주세요");
+        }
         return memberService.login(req);
     }
 

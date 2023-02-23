@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
-@Getter
-@ConstructorBinding
 @Component
+@ConstructorBinding
+@Getter
+@RequiredArgsConstructor
 @ToString
 public class JwtProperties {
 

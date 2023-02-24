@@ -1,10 +1,10 @@
 package com.example.cardmonkey.entity;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -18,9 +18,28 @@ public class Paid {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "paid")
-    private List<PaidCard> paidCards = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "card_id")
+    private Card card;
+
+    public void setPaidMember(Member member) {
+        this.member = member;
+    }
+
+    public void setPaidCard(Card card) {
+        this.card = card;
+    }
+
+    public static Paid createPaid(Member member, Card card) {
+        Paid paid = new Paid();
+
+        paid.setPaidMember(member);
+        paid.setPaidCard(card);
+
+        return paid;
+    }
 }

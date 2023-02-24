@@ -3,8 +3,6 @@ package com.example.cardmonkey.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -17,18 +15,25 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String userId;
 
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
     private String password;
+
     private String role;
 
     @Embedded
     private Benefit benefit;
 
-    @OneToMany(mappedBy = "member")
-    private List<Favor> favors = new ArrayList<>();
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 
-    @OneToMany(mappedBy = "member")
-    private List<Paid> paids = new ArrayList<>();
+    public void updateBenefit(Benefit newBenefit) {
+        this.benefit = newBenefit;
+    }
 }

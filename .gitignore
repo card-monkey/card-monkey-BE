@@ -203,5 +203,6 @@ gradle-app.setting
 
 # Settings
 src/main/resources/application.properties
+keystore.p12
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,java,intellij+all,gradle

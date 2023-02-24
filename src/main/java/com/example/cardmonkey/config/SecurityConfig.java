@@ -28,7 +28,7 @@ import java.util.List;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_URLS = { //이 URL은 권한 검사 안 함
+    private static final String[] PUBLIC_URLS = {
             "/signup", "/login", "/logout", "/userIdValidation",
             "/swagger-resources/**", "/swagger-ui.html","/swagger-ui/**",
             "/v2/api-docs", "/webjars/**", "/v3/api-docs**"
@@ -37,7 +37,7 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
     private final TokenService tokenService;
 
-    @Bean //회원 insert 서비스에서 비밀번호 암호화/복호화에 사용됨
+    @Bean
     public PasswordEncoder passwordEncoderParser() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
@@ -46,28 +46,25 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http)throws Exception {
 
         return http
-                .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
-                .mvcMatchers(PUBLIC_URLS).permitAll() // 가입 및 인증 주소는 누구나 접근가능
+                .authorizeRequests()
+                .mvcMatchers(PUBLIC_URLS).permitAll()
                 .and()
-                .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
-                .anyRequest().authenticated() // 그외 나머지 요청은 모두 인증된 회원만 접근 가능
+                .authorizeRequests()
+                .anyRequest().authenticated()
                 .and()
                 .cors()
                 .and()
-                .csrf().disable() // rest api이므로 csrf 보안이 필요없으므로 disable처리
-                .httpBasic().disable() // 기본설정 사용안함. 기본설정은 비인증시 로그인폼 화면으로 리다이렉트 된다.
-                // .formLogin().loginPage("/login").permitAll()//로그인 기본 url 설정
-                // .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token으로 인증할것이므로 세션필요없으므로 생성안함.
+                .csrf().disable()
+                .httpBasic().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(
                         JwtFilter.of(jwtProvider,tokenService),
                         UsernamePasswordAuthenticationFilter.class).build();
-        //인증을 처리하는 기본필터 UsernamePasswordAuthenticationFilter 대신 별도의 인증 로직을 가진 필터를 생성하고 사용하고 싶을 때 아래와 같이 필터를 등록하고 사용
     }
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() { //시큐리티 filter 제외, 그러나 OncePerRequestFilter는 시큐리티 필터가 아니라서 로직실행
+    public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().mvcMatchers(PUBLIC_URLS);
     }
 
@@ -75,14 +72,14 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOriginPatterns(Collections.singletonList("*")); // 모든 Origin에서의 요청을 허용
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")); // 해당 Http Methods를 사용하는 요청을 허용
-        configuration.setAllowedHeaders(List.of("authorization", "content-type", "x-auth-token")); // 해당 헤더를 사용하는 요청을 허용
-        configuration.setExposedHeaders(Collections.singletonList("x-auth-token")); // 헤더에 CSRF 토큰이 있는 요청에 대해 모든 응답 헤더를 노출
-        configuration.setAllowCredentials(true); // 사용자 자격 증명(쿠키, 인증키) 사용을 허용할 것
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("authorization", "content-type", "x-auth-token"));
+        configuration.setExposedHeaders(Collections.singletonList("x-auth-token"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // 모든 URL에 대해 위의 설정을 사용해 CORS 처리를 할 것
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }

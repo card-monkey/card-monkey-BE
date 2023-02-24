@@ -21,10 +21,8 @@ import java.io.IOException;
 @Component
 @Getter
 public class JwtFilter extends OncePerRequestFilter {
-    //시큐리티 필터 전에 유저 권한이나 인증 관련 정보를 넘겨주는 클래스
 
     private final JwtProvider jwtProvider;
-
     private final TokenService tokenService;
 
     @Autowired
@@ -40,11 +38,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        //filter에서 header를 가져옴
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (!tokenService.isTokenExists(authorizationHeader)) {
             try {
-                //token 값에서 유효값 (id, role)을 추출하여 userDTO를 만듦
                 AuthDTO user = jwtProvider.getMemberDtoOf(authorizationHeader);
                 SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
                         user,

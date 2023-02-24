@@ -30,8 +30,7 @@ public class JwtProvider {
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(now)
-                // TODO: 테스트를 위해서 일시적으로 토큰 유효기간 재설정
-                .setExpiration(new Date(now.getTime() + Duration.ofDays(3).toMillis())) // 만료시간 3일
+                .setExpiration(new Date(now.getTime() + Duration.ofMinutes(30).toMillis()))
                 .claim("userId", member.getUserId())
                 .claim("role", member.getRole())
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
@@ -39,11 +38,11 @@ public class JwtProvider {
     }
 
     public AuthDTO getMemberDtoOf(String authorizationHeader) {
-        validationAuthorizationHeader(authorizationHeader); //토큰이 Bearer로 시작하는지 형식이 맞는지 확인
+        validationAuthorizationHeader(authorizationHeader);
         String token = "";
         Claims claims = null;
         try {
-            token = extractToken(authorizationHeader); // header에서 토큰 추출 (Bearer 제거)
+            token = extractToken(authorizationHeader);
             claims = parsingToken(token);
             return new AuthDTO(claims);
         } catch (Exception e) {

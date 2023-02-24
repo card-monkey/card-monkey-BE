@@ -135,7 +135,14 @@ public class CardService {
     public CardDetailResDTO selectCardDetail(Long cardId) {
         Card findCard = cardRepository.findById(cardId).orElseThrow(
                 NoSuchCardException::new);
-        List<String> benefits = findCard.getBenefit().makeBenefitList();
+
+        List<String> benefits;
+
+        try {
+            benefits = findCard.getBenefit().makeBenefitList();
+        } catch (NullPointerException e) {
+            benefits = new ArrayList<>();
+        }
 
         return CardDetailResDTO.builder()
                 .id(findCard.getId())

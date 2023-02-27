@@ -65,45 +65,34 @@
 
 # 6. 구현 내용 🛠︎
 
-<details>
-<summary><b>서버 인프라</b></summary>
-
-  - AWS EC2 Server(Linux ver) : Ubuntu 20.04
-    - java jdk version : OpenJDK 11
-  - AWS RDS : MariaDB
-</details>
-
-
-<details>
-<summary><b>회원관리(JWT token)</b></summary>
-
-1. Token 발급
+<b>서버 인프라</b>
+- AWS EC2 Server(Linux ver) : Ubuntu 20.04
+- AWS RDS : MariaDB
+- AWS Route53
+<br>
+  
+<b>회원관리(JWT token)</b>
+- Token 발급
   - 회원가입 후 JWT Token 발급
-2. Token 기능
+- Token 기능
   - Header에 토큰이 없는경우 서비스 접근불가
-3. Token 관리
-  - 로그아웃하는 경우, Token Blacklist 진행
-  - 동일 토큰으로 접근시 Access  불가능
+- Token 관리
+  - 로그아웃하는 경우, Token Blacklist 에 등록
+  - 동일 토큰으로 접근시 Access 불가능
+<br>
 
-</details>
+<b>JPA활용 CRUD</b>
+- Spring Data JPA 활용
+- '회원가입', '카드신청', '찜하기', '혜택선택' 등 기능구현 시 JPA활용
+- '혜택선택'의 경우, Entity 구조에 따른 JPA 활용제한으로 커스텀쿼리 적용
+- 지연로딩, batch fetch size 적용 등으로 쿼리 최적화 적용
+<br>
 
-<details>
-<summary><b>JPA활용 CRUD</b></summary>
-
-   - SpringDataJPA 활용
-   - '회원가입', '카드신청', '찜하기', '혜택선택' 등 기능구현 시 JPA활용
-   - '혜택선택'의 경우, Entity 구조에 따른 JPA 활용제한으로 커스텀쿼리 적용
- 
-</details>
-
-<details>
-<summary><b>CORS & HTTPS</b></summary>
-
-1. CORS
+<b>CORS & HTTPS</b>
+- CORS
   - Front와 협력간 Cross-Origin 문제발생
   - WebMVC 설정 & SecurityFilterChain 기능추가 & corsConfigure 설정으로 해결
-2. HTTPS
-  - Front와의 통합배포 시, https로만 접근가능 이슈 확인
-  - Domain 구매 & certbot을 활용한 SSL 인증서 발급, nginx를 통한 적용으로 http -> https 리다이렉트 적용 
   
-</details>
+- HTTPS
+  - Front와의 통합배포 시, https로만 접근가능 이슈 확인
+  - Domain 구매 & certbot을 활용한 SSL 인증서 발급, nginx를 통한 적용으로 http -> https 리다이렉트 적용

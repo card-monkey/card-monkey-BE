@@ -39,7 +39,7 @@
 |김윤기👑|김우석|임재억|주찬혁|
 |:---:|:---:|:---:|:---:|
 |<a href="https://github.com/yunki-kim"><img src="https://avatars.githubusercontent.com/u/63786040?v=4" width=160/></a>|<a href="https://github.com/flimberkim"><img src="https://avatars.githubusercontent.com/u/113500922?v=4" width=160/></a>|<a href="https://github.com/lim950808"><img src="https://avatars.githubusercontent.com/u/90830299?v=4" width=160/></a>|<a href="https://github.com/crossbell8368"><img src="https://avatars.githubusercontent.com/u/50852143?v=4" width=160/></a>|
-|<b>THE LEADER OF TEAM2</b><br>초기 Entity 구성<br>GitHub 관리<br>로그인 기능구현<br>'혜택'기능구현<br>리팩토리|초기 Entity 구성<br>'검색' 기능구현<br>리팩토링|배포서버(AWS EC2) 인프라 구성<br>DB(AWS RDS)서버 구성<br>회원관리 기능구현<br>'찜하기'기능구현<br>리팩토링|ERD 테이블구성<br>'신청하기'기능구현<br>리팩토링 & README|
+|<b>팀장</b><br>초기 Entity 구성<br>GitHub 관리<br>로그인 기능구현<br>'혜택'기능구현<br>리팩토리|초기 Entity 구성<br>'검색' 기능구현<br>리팩토링|배포서버(AWS EC2) 인프라 구성<br>DB(AWS RDS)서버 구성<br>회원관리 기능구현<br>'찜하기'기능구현<br>리팩토링|ERD 테이블구성<br>'신청하기'기능구현<br>리팩토링 & README|
 
 <br><br>
 
@@ -104,6 +104,6 @@
   - WebMVC 설정 & SecurityFilterChain 기능추가 & corsConfigure 설정으로 해결
 2. HTTPS
   - Front와의 통합배포 시, https로만 접근가능 이슈 확인
-  - Domain 구매 & cerbot을 활용한 SSL 인증서 발급, nginx를 통한 적용으로 http -> https 리다이렉트 적용 
+  - Domain 구매 & certbot을 활용한 SSL 인증서 발급, nginx를 통한 적용으로 http -> https 리다이렉트 적용 
   
 </details>

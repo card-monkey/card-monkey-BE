@@ -71,14 +71,14 @@
 - AWS Route53
 <br>
   
-<b>회원관리(JWT token)</b>
+<b>JWT</b>
 - Token 발급
-  - 회원가입 후 JWT Token 발급
+  - 로그인 시 Token 발급
 - Token 기능
   - Header에 토큰이 없는경우 서비스 접근불가
 - Token 관리
   - 로그아웃하는 경우, Token Blacklist 에 등록
-  - 동일 토큰으로 접근시 Access 불가능
+  - 해당 토큰으로 접근시 Access 불가능
 <br>
 
 <b>JPA활용 CRUD</b>

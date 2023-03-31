@@ -28,7 +28,7 @@
 ">
   <img src="https://img.shields.io/badge/WBS-34A853?style=for-the-badge&logo=Google Sheets&color=green" />
 </a>&nbsp;&nbsp;
-<a href="https://documenter.getpostman.com/view/25864684/2s93CEvwPg">
+<a href="https://documenter.getpostman.com/view/24159441/2s93CKQaGM">
   <img src="https://img.shields.io/badge/Postman API-FF6C37?style=for-the-badge&logo=Postman&logoColor=white" />
 </a>&nbsp;&nbsp;
 
